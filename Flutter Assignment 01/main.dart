@@ -175,6 +175,16 @@ class _FlashcardScreenState extends State<FlashcardScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // NEW: Add the progress text here
+            Text(
+              "Question ${currentIndex + 1} of ${widget.series.length}",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.pinkAccent,
+              ),
+            ),
+            const SizedBox(height: 10), // NEW: Adds spacing
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: LinearProgressIndicator(
