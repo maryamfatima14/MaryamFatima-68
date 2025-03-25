@@ -1,17 +1,20 @@
-# 🎯 Multiplication Quiz App 🎲  
+# Multiplication Quiz App 🎯  
 
-A fun and interactive **Flutter** app for mastering multiplication tables! It features **quiz & practice modes**, customizable settings, and a **visually appealing pink-themed UI**.  
+A fun **Flutter app** to help kids and beginners practice multiplication tables.  
 
-## 🌟 Features  
+## Features  
 
-- 🏠 **Home Screen** – Simple UI with a 🎛️ "Continue" button for quick access.  
-- 🏆 **Quiz Mode** – Customize tables (1-20), set question limits (5-20), enable ⏳ timers (5-30 sec), and track scores in real-time.  
-- 🔢 **Practice Mode** – Get random multiplication questions, receive ✅ instant feedback, and manually refresh questions.  
-- ⚙️ **Custom Settings** – Adjust font size ✏️ and personalize the theme 🎨.  
-- 📊 **Result Screen** – View your final score 📈 and easily navigate back.  
+- **🏠 Home Screen** – Simple UI with quick access to the quiz.  
+- **🎓 Quiz Mode** – Choose a table (1-20), set question limits (5-20), and enable/disable a timer ⏳.  
+- **🏆 Practice Mode** – Random questions with instant feedback ✅❌.  
+- **⚙️ Custom Settings** – Adjustable font size 🔡 and a pink-themed UI 🎨.  
+- **📜 Result Screen** – Shows the final score 🎯 with an option to restart 🔄.  
 
-🚀 **Make learning multiplication fun & engaging!** 🎉
-
+**Learn multiplication in a fun way! 🚀**
 
 
 ![alt text](quiz.PNG)
+
+https://github.com/user-attachments/assets/7934f299-8136-41f9-ba20-42e5ef064741
+
+
