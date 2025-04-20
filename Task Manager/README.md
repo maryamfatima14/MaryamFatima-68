@@ -1,7 +1,11 @@
 The Welcome Screen  
+
 ![alt text](01.jpeg)
+
 The user can set their own sleep time.
+
 ![alt text](02.jpeg)
+
 The user can set their own wake up time. 
 ![alt text](03.jpeg)
 Home screen where calender timings & all completed tasks will appear. 
