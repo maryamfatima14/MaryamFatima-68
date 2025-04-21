@@ -1,3 +1,29 @@
+
+### 🌟 **Todo – Smart Task Manager for Your Daily Life** 🌟  
+**📝 Plan. 🕒 Manage. 📈 Achieve.**
+
+**Todo** is your all-in-one daily task planner designed to help you stay organized, focused, and in control of your routine.
+
+---
+
+### 🔑 **Key Features**:
+
+🛌 **Sleep & Wake-Up Time** – Set your personalized sleep and wake-up schedule  
+📅 **Home Dashboard** – View all your tasks & calendar in one smart view  
+🗂️ **Task Management** – Add, edit & organize your daily tasks effortlessly  
+📤 **Download Report** – Export your daily task report in one click  
+🔔 **Custom Notifications** – Enable or disable reminders as per your preference  
+⚙️ **Settings Control** – Manage privacy, app preferences & more  
+🔒 **Privacy First** – Your data is secure with our built-in privacy features  
+🎥 **Demo Video** – See how smoothly Todo fits into your life  
+
+---
+
+✅ **Todo is built for simplicity, control, and productivity.**  
+Whether you're a student, a professional, or anyone who wants better control of their time—**Todo is your smart daily companion.**
+
+
+
 The Welcome Screen  
 
 ![alt text](01.jpeg)
