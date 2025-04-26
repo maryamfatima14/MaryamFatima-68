@@ -59,4 +59,6 @@ News Buzz gives you the latest news at your fingertips with a modern design, rea
 
 ![alt text](11.jfif)
 
-<video controls src="Demo (2).mp4" title="Demo"></video>
+https://github.com/user-attachments/assets/71d670b7-c728-45c0-9239-15253cfc8775
+
+ 
