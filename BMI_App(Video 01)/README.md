@@ -1,16 +1,6 @@
-# bmi_app
+Vedio 01
+In this video I have created an empty project for my BMI_App.
+The link of that vedio is here:
+https://youtu.be/35AP1gDSTKI?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![video 01](https://github.com/user-attachments/assets/eaba45ea-700f-4ee5-a473-96b7bb421c28)
