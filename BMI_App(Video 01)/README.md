@@ -59,6 +59,45 @@ In this vedio I made seprate files for my code.
 The link of this vedio is here:
 https://youtu.be/s-RO-afI0Tc?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
 
+![vedio 07](https://github.com/user-attachments/assets/b86c3c59-d7f3-40c1-a69d-6630c9489d77)
+
+Vedio 08:
+
+In this vedio I used gesture detecture to activate and deactivae my icons.
+
+The link of this vedio is here:
+https://youtu.be/lfh4KfO7nkE?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 08](https://github.com/user-attachments/assets/e8956c46-30a6-4c23-8210-a651f6ae0db0)
+
+Vedio 09:
+
+In this vedio I used enum to handle genders functinality.
+
+The link of this vedio is here:
+https://youtu.be/Q9bchACYC5s?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 09](https://github.com/user-attachments/assets/b2f9f5df-4862-4da1-ba85-3cee04192999)
+
+Vedio 10:
+
+In this vedio I used ternary operator to simplify my code also to avoid complexities.
+
+The link of this vedio is here:
+https://youtu.be/aUiXXeQHyI4?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 10](https://github.com/user-attachments/assets/faadf8b1-2e3f-42be-86aa-79ec9e0967d5)
+
+Vedio 11:
+
+In this vedio I used a functions for gesture detecture that works as object instead of wrirting complete gesture function.
+
+The link of this vedio is here:
+https://youtu.be/mFFOy8HuJlI?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 11](https://github.com/user-attachments/assets/72237d54-1ac4-403e-8b38-d93252aedd93)
+
+
 
 
 
