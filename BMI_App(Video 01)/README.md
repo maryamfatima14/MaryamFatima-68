@@ -125,6 +125,51 @@ https://youtu.be/Lf7fWCqiS3k?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
 
 ![vedio 14](https://github.com/user-attachments/assets/f1a191e8-ac0f-4885-bff7-d367422b1165)
 
+Vedio 15:
+
+In this vedio I added floating action buttons in row form.
+
+The link of this vedio is here:
+https://youtu.be/IhwbaMhNGV0?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 15](https://github.com/user-attachments/assets/a8a071e5-5380-4fe8-ae97-0d344dba5d3e)
+
+
+Vedio 16:
+
+In this vedio I used navigator tu move at next screen with calculate container.
+
+The link of this vedio is here:
+https://youtu.be/uas92JZTwuE?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 16](https://github.com/user-attachments/assets/41a7f102-87ae-46ab-acfb-596d438f86ae)
+
+
+Vedio 17:
+
+In this Vedio I designed the second Screen which displays results.
+
+The link of this vedio is here:
+https://youtu.be/IBa2cDAJLA0?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 17](https://github.com/user-attachments/assets/6ccd4eea-7800-4ba0-9d5f-42ec830b49f3)
+
+
+Vedio 18:
+
+In this vedio I added complete functiality of my Results screen and this makes my app complete.
+
+The link of this vedio is here:
+https://youtu.be/f0NfQzpgwik?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 18](https://github.com/user-attachments/assets/c43e308c-0228-4c39-aeb2-22e93f479b2e)
+
+![one](https://github.com/user-attachments/assets/bc7852bd-f521-4273-83f8-967acbf1d324)
+
+![two](https://github.com/user-attachments/assets/cf47f619-b89b-4810-8ecc-5c3ff26389d3)
+
+
+
 
 
 
