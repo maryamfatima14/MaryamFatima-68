@@ -90,12 +90,41 @@ https://youtu.be/aUiXXeQHyI4?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
 
 Vedio 11:
 
-In this vedio I used a functions for gesture detecture that works as object instead of wrirting complete gesture function.
+In this vedio I used a function for gesture detecture that works as object instead of wrirting complete gesture function.
 
 The link of this vedio is here:
 https://youtu.be/mFFOy8HuJlI?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
 
 ![vedio 11](https://github.com/user-attachments/assets/72237d54-1ac4-403e-8b38-d93252aedd93)
+
+Vedio 12:
+
+In this vedio I made a seprate constant file and designed the height section of my BMI_App.
+
+The link of this vedio is here:
+https://youtu.be/A9br34m_3Jw?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 12](https://github.com/user-attachments/assets/c2883c5f-4068-459d-be6c-0b9e0f5e4b05)
+
+Vedio 13:
+
+In this vedio I used the slider and text for my height section.
+
+The link of this vedio is here:
+https://youtu.be/GisikVPw-JQ?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 13](https://github.com/user-attachments/assets/4c44552a-7bbe-4d85-b241-f3501bc2a7d4)
+
+
+Vedio 14:
+
+In this vedio I designed the weight and age section also I uesd a container for calculation.
+
+The link of this vedio is here:
+https://youtu.be/Lf7fWCqiS3k?list=PL9xYeVPGEGzf1bLLAe4_KUARZZW3bIVWu
+
+![vedio 14](https://github.com/user-attachments/assets/f1a191e8-ac0f-4885-bff7-d367422b1165)
+
 
 
 
