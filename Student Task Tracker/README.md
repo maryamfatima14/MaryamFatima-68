@@ -164,29 +164,22 @@ CREATE TABLE reports (
 The **Student Task Tracker App** powered by **Supabase** offers a real-time, scalable, and secure solution for classroom task management—boosting transparency and student accountability with ease.
 
 
+
 ## 📡 Backend Connectivity
 
-<div align="center" style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+<table>
+  <tr>
+    <th>Supabase Table Structure</th>
+    <th>Realtime Channel</th>
+    <th>Task Update API</th>
+    <th>User Insertion API</th>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/ad0f0452-b73d-4466-95ea-07a1fb19adbe" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/32de9fb2-e9b2-4459-aa87-0828bb143680" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/e8966b30-da42-470c-baef-857ad05db8ec" width="250"/></td>
+    <td><img src="https://github.com/user-attachments/assets/3a0c0e41-afdd-49d1-aaaf-501b4227ddd7" width="250"/></td>
+  </tr>
+</table>
 
-  <div style="margin: 10px;">
-    <h4 align="center">Supabase Table Structure</h4>
-    <img src="https://github.com/user-attachments/assets/ad0f0452-b73d-4466-95ea-07a1fb19adbe" width="250px"/>
-  </div>
-
-  <div style="margin: 10px;">
-    <h4 align="center">Realtime Channel</h4>
-    <img src="https://github.com/user-attachments/assets/32de9fb2-e9b2-4459-aa87-0828bb143680" width="250px"/>
-  </div>
-
-  <div style="margin: 10px;">
-    <h4 align="center">Task Update API</h4>
-    <img src="https://github.com/user-attachments/assets/e8966b30-da42-470c-baef-857ad05db8ec" width="250px"/>
-  </div>
-
-  <div style="margin: 10px;">
-    <h4 align="center">User Insertion API</h4>
-    <img src="https://github.com/user-attachments/assets/3a0c0e41-afdd-49d1-aaaf-501b4227ddd7" width="250px"/>
-  </div>
-
-</div>
 
