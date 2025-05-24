@@ -245,6 +245,22 @@ The **Student Task Tracker App** powered by **Supabase** offers a real-time, sca
   </tr>
 </table>
 
+## 👨‍🎓 Student Portal
+
+<div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">
+  <img src="https://github.com/user-attachments/assets/b4b2b878-74d3-48c6-967f-29e787b8f523" alt="1" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/4a63e279-2778-400b-aa26-12408612f630" alt="2" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/d19cfd4d-558c-4153-9245-1902191a431a" alt="3" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/92692d4e-07e2-4850-84cc-9a3b400cb365" alt="4" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/65f98e59-b188-4442-aead-5c5f22163c6d" alt="5" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/1389754c-2509-433c-9a06-c170eabb0c42" alt="6" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/2e67d320-0ad4-42d3-8629-89b1fb9085ad" alt="7" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/6f26ff29-a805-4650-856f-09a9644cc1cc" alt="8" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/b49e8069-9494-464a-b229-fae721234dbd" alt="9" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/713ae403-8ef3-4207-b468-32cacca67675" alt="10_1" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/a96a7a75-5017-41ec-a94a-e27a1538a9af" alt="11" width="320" style="display: inline-block; margin-right: 12px;" />
+</div>
+
 
 
 
