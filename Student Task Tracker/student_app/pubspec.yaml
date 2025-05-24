@@ -1,0 +1,28 @@
+name: student_task_tracker
+description: A Flutter app for students to track tasks and performance.
+version: 1.0.0
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  supabase_flutter: ^2.0.0
+  fl_chart: ^0.68.0
+  google_fonts: ^6.0.0
+  table_calendar: ^3.0.0
+  flutter_spinkit: ^5.2.0
+  timezone: ^0.9.4
+  intl: ^0.19.0
+  shared_preferences: ^2.3.0
+  lottie: ^3.1.2
+  animated_text_kit: ^4.2.2
+  uuid: ^4.0.0
+  flutter_local_notifications: ^17.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/login.json
