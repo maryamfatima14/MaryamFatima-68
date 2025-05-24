@@ -1,4 +1,4 @@
-![twenty one](https://github.com/user-attachments/assets/fc4c80bf-7e9f-44a5-b72d-9ef429c457b8)![twenty](https://github.com/user-attachments/assets/5130a7e2-e8ce-4e56-9ce9-30f6241970c2) 📚 Real-time Student Task Tracker App with Supabase
+📚 Real-time Student Task Tracker App with Supabase
 
 ## 📌 1. Project Overview
 
@@ -220,6 +220,28 @@ The **Student Task Tracker App** powered by **Supabase** offers a real-time, sca
   <tr>
     <td><img src="https://github.com/user-attachments/assets/855ab76b-0c59-4020-b157-2d083bd8b289" width="200"/></td>
     <td><img src="https://github.com/user-attachments/assets/d1cf9c41-e992-4b11-9d0c-448cb92799a0" width="200"/></td>
+  </tr>
+</table>
+
+## 👨‍🎓 Student Portal
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/b4b2b878-74d3-48c6-967f-29e787b8f523" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/4a63e279-2778-400b-aa26-12408612f630" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/d19cfd4d-558c-4153-9245-1902191a431a" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/92692d4e-07e2-4850-84cc-9a3b400cb365" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/65f98e59-b188-4442-aead-5c5f22163c6d" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/1389754c-2509-433c-9a06-c170eabb0c42" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/2e67d320-0ad4-42d3-8629-89b1fb9085ad" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/6f26ff29-a805-4650-856f-09a9644cc1cc" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/b49e8069-9494-464a-b229-fae721234dbd" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/713ae403-8ef3-4207-b468-32cacca67675" width="200"/></td>
+    <td><img src="https://github.com/user-attachments/assets/a96a7a75-5017-41ec-a94a-e27a1538a9af" width="200"/></td>
   </tr>
 </table>
 
