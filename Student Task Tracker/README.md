@@ -1,4 +1,4 @@
- 📚 Real-time Student Task Tracker App with Supabase
+![twenty one](https://github.com/user-attachments/assets/fc4c80bf-7e9f-44a5-b72d-9ef429c457b8)![twenty](https://github.com/user-attachments/assets/5130a7e2-e8ce-4e56-9ce9-30f6241970c2) 📚 Real-time Student Task Tracker App with Supabase
 
 ## 📌 1. Project Overview
 
@@ -181,5 +181,54 @@ The **Student Task Tracker App** powered by **Supabase** offers a real-time, sca
     <td><img src="https://github.com/user-attachments/assets/3a0c0e41-afdd-49d1-aaaf-501b4227ddd7" width="250"/></td>
   </tr>
 </table>
+
+📱 App Visuals
+
+## 👩‍🏫 Admin Portal
+
+<div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">
+  <img src="https://github.com/user-attachments/assets/f58884e4-f1c2-4109-a5ce-479ea7439cbe" alt="one" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/bba75894-029c-42b8-828d-e893b886f4dd" alt="two" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/8b94ba17-2a5c-475a-be1f-114a0021de9e" alt="three" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/5518c254-a95a-497e-9ae2-dc6f0e05ebf3" alt="four" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/b5083f59-1153-4a6a-85ec-8ae376419caa" alt="five" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/ddb736f8-1ca3-41e1-989a-b5c804926f35" alt="six" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/6643c1ec-5b90-48f7-b59c-8a5e90588499" alt="seven" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/67c01bb9-76b0-4f80-a85f-2db0089a09a3" alt="eight" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/fcc5741e-d792-4806-81e3-b26ff01c98d5" alt="nine" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/92b12f0e-3050-4b3d-aaa4-40bf77a07be8" alt="ten" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/1fbb7935-8adf-4d7b-bd7c-edb22d2109eb" alt="eleven" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/6307147c-1af0-428c-b426-37e06e86abec" alt="twelve" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/b89455cb-2a00-4e27-a722-03a61112a872" alt="thirteen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/bee52455-1f70-4611-8273-1c14803ac1a7" alt="fourteen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/9f02887b-bb81-446f-a234-ae84c847e9b7" alt="fifteen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/876bd448-d80d-4732-9a91-7b58e928b5e2" alt="sixteen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/f04ed63f-e434-426a-84eb-308104f04099" alt="seventeen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/051142c6-3dc3-4d69-bbff-62344fbda522" alt="eighteen" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/3318bc87-3c60-4c60-ac3d-f4d14655a32d" alt="twenty" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/0a6ec3f8-3967-41bb-a887-2c3f27f60717" alt="twenty one" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/855ab76b-0c59-4020-b157-2d083bd8b289" alt="twenty 22" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/d1cf9c41-e992-4b11-9d0c-448cb92799a0" alt="twenty 3" width="320" style="display: inline-block; margin-right: 12px;" />
+</div>
+
+---
+
+## 👨‍🎓 Student Portal
+
+<div style="overflow-x: auto; white-space: nowrap; padding: 10px 0;">
+  <img src="https://github.com/user-attachments/assets/b4b2b878-74d3-48c6-967f-29e787b8f523" alt="1" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/4a63e279-2778-400b-aa26-12408612f630" alt="2" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/d19cfd4d-558c-4153-9245-1902191a431a" alt="3" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/92692d4e-07e2-4850-84cc-9a3b400cb365" alt="4" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/65f98e59-b188-4442-aead-5c5f22163c6d" alt="5" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/1389754c-2509-433c-9a06-c170eabb0c42" alt="6" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/2e67d320-0ad4-42d3-8629-89b1fb9085ad" alt="7" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/6f26ff29-a805-4650-856f-09a9644cc1cc" alt="8" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/b49e8069-9494-464a-b229-fae721234dbd" alt="9" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/713ae403-8ef3-4207-b468-32cacca67675" alt="10_1" width="320" style="display: inline-block; margin-right: 12px;" />
+  <img src="https://github.com/user-attachments/assets/a96a7a75-5017-41ec-a94a-e27a1538a9af" alt="11" width="320" style="display: inline-block; margin-right: 12px;" />
+</div>
+
+
 
 
