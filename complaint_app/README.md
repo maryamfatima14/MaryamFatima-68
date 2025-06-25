@@ -121,17 +121,34 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
 - 🚫 No cross-department complaint support (future enhancement)
 - 📄 Excel upload required to bulk add students and batches
 
-  Admin Portal
 
-<!-- Row 1 -->
+## 🛠️ Database Connectivity (Supabase Integration)
+
+This project uses **Supabase** to handle real-time, secure, and scalable backend operations. The following screenshots demonstrate how the database is connected and configured with the application:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/03f15364-71b2-4fbf-a73c-8d50b19eac8e" width="200"/>
+  <img src="https://github.com/user-attachments/assets/1324b9d5-07b0-492f-adcf-ac4ab685d9f6" width="200"/>
+  <img src="https://github.com/user-attachments/assets/736b057f-7f30-4907-b60f-a11dd72de8e1" width="200"/>
+  <img src="https://github.com/user-attachments/assets/bb6bcc3a-d1b3-45e8-a5b8-42f0e669ac4b" width="200"/>
+</p>
+
+✨ These connections ensure:
+- 🔐 **Secure authentication** with Supabase Auth
+- 📡 **Real-time sync** using Supabase Realtime
+- 🗃️ Easy table and role management via Supabase Studio
+- ⚙️ Integration with Flutter frontend for seamless user experience
+
+
+
+## 📊 Admin Dashboard
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/faad65ce-9587-44cd-9dd0-92554a430256" width="200"/>
   <img src="https://github.com/user-attachments/assets/1fc120c4-35a2-41fa-8092-f1ea54cb1c5f" width="200"/>
   <img src="https://github.com/user-attachments/assets/6ad47e77-2ed7-44ec-b38e-09cf82fe8695" width="200"/>
   <img src="https://github.com/user-attachments/assets/c82ed85e-fd7d-4b3d-8b12-81b113240f66" width="200"/>
 </p>
-
-<!-- Row 2 -->
 <p align="center">
   <img src="https://github.com/user-attachments/assets/9f608adf-6fb6-4ea8-bf26-656336b58cc2" width="200"/>
   <img src="https://github.com/user-attachments/assets/d7158b63-d949-4699-9ae6-d91cd96e15b8" width="200"/>
@@ -139,15 +156,14 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
   <img src="https://github.com/user-attachments/assets/58a98e62-ecda-48ae-85db-d6cf09213ce6" width="200"/>
 </p>
 
-<!-- Row 3 -->
+## 🧑‍🏫 HOD Dashboard
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fcf7607b-164d-4bbc-b152-7a6bb521a0a3" width="200"/>
   <img src="https://github.com/user-attachments/assets/28adf2f5-4a58-44ab-9107-26b2525bdf1f" width="200"/>
   <img src="https://github.com/user-attachments/assets/190c7530-ce2b-4d0c-94f9-24de73d35856" width="200"/>
   <img src="https://github.com/user-attachments/assets/e563fe92-e87a-4708-9f35-fdc49cdef40f" width="200"/>
 </p>
-
-<!-- Row 4 -->
 <p align="center">
   <img src="https://github.com/user-attachments/assets/bc0b25cb-d6c7-49d6-b53c-44f9aa71147c" width="200"/>
   <img src="https://github.com/user-attachments/assets/9cff074a-573d-40c3-94e8-cf0e7a517dcb" width="200"/>
@@ -155,15 +171,14 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
   <img src="https://github.com/user-attachments/assets/b68abc8d-fb1b-4cb7-b642-c25d4f912b5e" width="200"/>
 </p>
 
-<!-- Row 5 -->
+## 👨‍🏫 Batch Advisor Dashboard
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/5c0384cb-c1a0-456a-9f78-2acc0c9a2b8c" width="200"/>
   <img src="https://github.com/user-attachments/assets/d56b0ed4-9121-4390-aa30-386fe8d62cf2" width="200"/>
   <img src="https://github.com/user-attachments/assets/e459ab7e-a854-4eac-8c1e-c51620eb963d" width="200"/>
   <img src="https://github.com/user-attachments/assets/ec689a8e-4733-46be-9ed4-3c0ec80e68de" width="200"/>
 </p>
-
-<!-- Row 6 -->
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c2433ae8-3326-4809-a58a-48ee65c42d95" width="200"/>
   <img src="https://github.com/user-attachments/assets/8972bc85-127f-4455-b786-9bd268b3c28d" width="200"/>
@@ -171,15 +186,21 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
   <img src="https://github.com/user-attachments/assets/524e536d-4eab-432d-b511-b82adc3029d4" width="200"/>
 </p>
 
-<!-- Row 7 -->
+## 👩‍🎓 Student Dashboard
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/7373cb17-9b01-427d-9bac-8e6f3947fde7" width="200"/>
   <img src="https://github.com/user-attachments/assets/ddca7253-12ad-4f36-9320-b517244c2575" width="200"/>
   <img src="https://github.com/user-attachments/assets/af035bbf-75a0-49fc-baff-486134fa5a2a" width="200"/>
   <img src="https://github.com/user-attachments/assets/89fdefbc-ef2c-47ec-8d22-c80c95c6a33d" width="200"/>
 </p>
-
-<!-- Row 8 (last row with 1 image) -->
 <p align="center">
   <img src="https://github.com/user-attachments/assets/46af603b-0898-4889-8c78-14890b509786" width="200"/>
+  <img src="https://github.com/user-attachments/assets/e9a18044-40c8-4711-a30e-040cb0c51fa6" width="200"/>
+  <img src="https://github.com/user-attachments/assets/9091d285-a79c-4597-9b4b-06a08e7f0fea" width="200"/>
+  <img src="https://github.com/user-attachments/assets/ab5c8331-0d82-48a6-97c9-1c65475e66fb" width="200"/>
 </p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c7af9144-f023-4c52-93dd-3d2e5cf9375c" width="200"/>
+</p>
+
