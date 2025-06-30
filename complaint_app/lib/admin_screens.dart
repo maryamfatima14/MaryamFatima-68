@@ -8,6 +8,13 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:collection/collection.dart';
+import 'package:open_file/open_file.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
+import 'utils/save_file.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:geolocator/geolocator.dart';
 
 final _client = SupabaseConfig.client;
 
@@ -45,23 +52,130 @@ class AdminDashboard extends StatelessWidget {
     );
   }
 
+  Widget _buildSimplifiedLayout(BuildContext context, List<Map<String, dynamic>> featuresToShow) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFEAEFEF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+        elevation: 0,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 0, top: 0, bottom: 0),
+              child: Icon(
+                Icons.admin_panel_settings,
+                color: Color(0xFFEAEFEF),
+                size: 38,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                SizedBox(height: 8),
+                Text(
+                  'Welcome to',
+                  style: TextStyle(
+                    color: Color(0xFFEAEFEF),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Admin Dashboard',
+                  style: TextStyle(
+                    color: Color(0xFFEAEFEF),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 22,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+            child: IconButton(
+              icon: const Icon(Icons.menu, color: Color(0xFFEAEFEF), size: 26),
+              onPressed: () => _showAdminMenu(context),
+              tooltip: 'Menu',
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Avatar section
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFF52357B), width: 4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 44,
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('assets/animations/admin.png'),
+                  ),
+                ),
+              ),
+            ),
+            // Grid content
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: GridView.builder(
+                  itemCount: featuresToShow.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: 1.18,
+                  ),
+                  itemBuilder: (context, index) {
+                    final feature = featuresToShow[index];
+                    if (feature['dummy'] == true) {
+                      return const SizedBox.shrink();
+                    }
+                    return _AdminFeatureTileLight(
+                      icon: feature['icon'] as IconData,
+                      title: feature['title'] as String,
+                      onTap: feature['onTap'] as VoidCallback,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final features = [
       {
-        'icon': Icons.apartment,
-        'title': 'Departments',
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageDepartmentsScreen())),
-      },
-      {
-        'icon': Icons.group,
-        'title': 'Batches',
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ManageBatchesScreen())),
-      },
-      {
-        'icon': Icons.person_add,
-        'title': 'Batch Advisors',
-        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AssignBatchAdvisorsScreen())),
+        'icon': Icons.analytics,
+        'title': 'Status',
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminStatusScreen())),
       },
       {
         'icon': Icons.admin_panel_settings,
@@ -78,143 +192,80 @@ class AdminDashboard extends StatelessWidget {
         'title': 'Import Data',
         'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => ImportDataScreen())),
       },
+      {
+        'icon': Icons.group,
+        'title': 'Students',
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => StudentsScreen())),
+      },
+      {
+        'icon': Icons.manage_accounts,
+        'title': 'Fix User Accounts',
+        'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => FixUserAccountsScreen())),
+      },
     ];
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFE0E1DD),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Gradient Header
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0D1B2A),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x220D1B2A),
-                      blurRadius: 16,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.admin_panel_settings, color: Colors.white, size: 40),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Text(
-                        'Admin Panel',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                      tooltip: 'Menu',
-                      onPressed: () => _showAdminMenu(context),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white, size: 28),
-                      tooltip: 'Logout',
-                      onPressed: () {
-                        Navigator.of(context).popUntil((route) => route.isFirst);
-                      },
-                    ),
-                  ],
-                ),
+    // Center the last tile if odd number of tiles
+    List<Map<String, dynamic>> featuresToShow = List.from(features);
+    if (featuresToShow.length % 2 == 1) {
+      featuresToShow.add({'dummy': true});
+    }
+
+    return _buildSimplifiedLayout(context, featuresToShow);
+  }
+}
+
+class _AdminFeatureTileLight extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+  const _AdminFeatureTileLight({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF52357B).withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Color(0xFF52357B).withOpacity(0.10), width: 1.2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Color(0xFFEAEFEF),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 24),
-              // Section Title
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.dashboard_customize, color: Color(0xFF0D1B2A)),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Admin Features',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.pink[700],
-                      ),
-                    ),
-                  ],
-                ),
+              child: Icon(icon, color: Color(0xFF52357B), size: 22),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xFF52357B),
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                letterSpacing: 0.1,
               ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
-                  ),
-                  itemCount: features.length,
-                  itemBuilder: (context, index) {
-                    final feature = features[index];
-                    return GestureDetector(
-                      onTap: feature['onTap'] as VoidCallback,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF0D1B2A).withOpacity(0.08),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                          border: Border.all(color: Color(0xFF0D1B2A).withOpacity(0.15), width: 1.2),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Color(0xFF0D1B2A).withOpacity(0.10),
-                              radius: 32,
-                              child: Icon(feature['icon'] as IconData, color: Color(0xFF0D1B2A), size: 36),
-                            ),
-                            const SizedBox(height: 16),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                feature['title'] as String,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: Color(0xFF0D1B2A),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
@@ -228,55 +279,109 @@ class _AdminMenuSheet extends StatefulWidget {
 
 class _AdminMenuSheetState extends State<_AdminMenuSheet> {
   int _selectedIndex = -1;
-  static const LatLng _center = LatLng(30.0419, 72.3556); // Vehari, Pakistan
+  static const LatLng _center = LatLng(30.0419, 72.3556);
+  bool _isSharingLocation = false;
+
+  Future<void> _shareLocation() async {
+    setState(() => _isSharingLocation = true);
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() => _isSharingLocation = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location services are disabled.'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() => _isSharingLocation = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied.'), backgroundColor: Colors.red),
+          );
+          return;
+        }
+      }
+      if (permission == LocationPermission.deniedForever) {
+        setState(() => _isSharingLocation = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are permanently denied.'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final url = 'https://maps.google.com/?q=${position.latitude},${position.longitude}';
+      await Share.share('My location: $url');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to share location: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() => _isSharingLocation = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF52357B),
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Profile (centered)
-          Column(
-            children: [
-              CircleAvatar(
-                radius: 48,
-                backgroundImage: AssetImage('assets/animations/admin.png'),
-              ),
-              const SizedBox(height: 12),
-              const Text('Welcome Admin', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0D1B2A))),
-            ],
-          ),
-          const SizedBox(height: 24),
-          // Menu options
-          _buildMenuTile('Privacy settings', 0, icon: Icons.privacy_tip),
-          _buildMenuTile('Location', 1, icon: Icons.location_on),
-          const SizedBox(height: 16),
-          if (_selectedIndex == 0)
-            Container(
+          _buildMenuTile('Location', 0, icon: Icons.location_on),
+          GestureDetector(
+            onTap: _isSharingLocation ? null : _shareLocation,
+            child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE0E1DD).withOpacity(0.15),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF52357B).withOpacity(0.18), width: 1.2),
               ),
-              child: const Text(
-                'Your privacy is important. We do not share your data with third parties. All information is kept confidential.',
-                style: TextStyle(fontSize: 15, color: Color(0xFF0D1B2A)),
+              child: Row(
+                children: [
+                  Icon(Icons.share_location, color: const Color(0xFF52357B)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      _isSharingLocation ? 'Sharing Location...' : 'Share Location',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF52357B),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  if (_isSharingLocation)
+                    const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF52357B)),
+                    ),
+                  if (!_isSharingLocation)
+                    Icon(Icons.arrow_forward_ios, size: 18, color: const Color(0xFF52357B)),
+                ],
               ),
             ),
-          if (_selectedIndex == 1)
+          ),
+          _buildMenuTile('Privacy Policy', 1, icon: Icons.privacy_tip),
+          _buildMenuTile('Logout', 2, icon: Icons.logout),
+          const SizedBox(height: 16),
+          if (_selectedIndex == 0)
             Container(
               width: double.infinity,
               height: 200,
               margin: const EdgeInsets.only(top: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF0D1B2A).withOpacity(0.10),
+                color: const Color(0xFFEAEFEF).withOpacity(0.10),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: ClipRRect(
@@ -297,12 +402,38 @@ class _AdminMenuSheetState extends State<_AdminMenuSheet> {
                           point: _center,
                           width: 40,
                           height: 40,
-                          child: const Icon(Icons.location_pin, color: Color(0xFF0D1B2A), size: 40),
+                          child: const Icon(Icons.location_pin, color: Color(0xFFEAEFEF), size: 40),
                         ),
                       ],
                     ),
                   ],
                 ),
+              ),
+            ),
+          if (_selectedIndex == 1)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAEFEF).withOpacity(0.10),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Text(
+                'Your privacy is important. We do not share your data with third parties. All information is kept confidential.',
+                style: TextStyle(fontSize: 15, color: Color(0xFFEAEFEF)),
+              ),
+            ),
+          if (_selectedIndex == 2)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAEFEF).withOpacity(0.10),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Text(
+                'Logout from the admin panel.',
+                style: TextStyle(fontSize: 15, color: Color(0xFFEAEFEF)),
               ),
             ),
           const SizedBox(height: 24),
@@ -318,27 +449,34 @@ class _AdminMenuSheetState extends State<_AdminMenuSheet> {
         setState(() {
           _selectedIndex = isSelected ? -1 : index;
         });
+        if (title == 'Logout') {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
       },
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE0E1DD).withOpacity(0.10) : Colors.white,
+          color: isSelected ? const Color(0xFF52357B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF0D1B2A), width: 1.2),
+          border: Border.all(color: const Color(0xFF52357B).withOpacity(0.18), width: 1.2),
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF0D1B2A)),
+            Icon(icon, color: isSelected ? Colors.white : const Color(0xFF52357B)),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 18, color: Color(0xFF0D1B2A), fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: isSelected ? Colors.white : const Color(0xFF52357B),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 18, color: Color(0xFF0D1B2A)),
+            Icon(Icons.arrow_forward_ios, size: 18, color: isSelected ? Colors.white : const Color(0xFF52357B)),
           ],
         ),
       ),
@@ -346,7 +484,6 @@ class _AdminMenuSheetState extends State<_AdminMenuSheet> {
   }
 }
 
-// Scaffold screens for each feature
 class ManageDepartmentsScreen extends StatefulWidget {
   const ManageDepartmentsScreen({super.key});
   @override
@@ -355,7 +492,7 @@ class ManageDepartmentsScreen extends StatefulWidget {
 
 class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
   List<Map<String, dynamic>> _departments = [];
-  List<AppUser> _hods = [];
+  List<Map<String, dynamic>> _hods = [];
   bool _isLoading = true;
   String? _error;
 
@@ -389,21 +526,20 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
 
   Future<void> _loadHODs() async {
     try {
-      final hods = await UserService.getUsersByRole('HOD');
-      setState(() => _hods = hods);
+      final hods = await _client
+          .from('hods_view')
+          .select('*')
+          .order('username');
+      setState(() => _hods = List<Map<String, dynamic>>.from(hods));
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load HODs: $e'), backgroundColor: Colors.red),
-        );
-      }
+      setState(() => _error = 'Failed to load HODs: $e');
     }
   }
 
   void _showAddDepartmentDialog() {
     final nameController = TextEditingController();
     final codeController = TextEditingController();
-    AppUser? selectedHOD;
+    Map<String, dynamic>? selectedHOD;
 
     showDialog(
       context: context,
@@ -422,12 +558,12 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
                 decoration: const InputDecoration(labelText: 'Department Code'),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<AppUser>(
+              DropdownButtonFormField<Map<String, dynamic>>(
                 value: selectedHOD,
                 decoration: const InputDecoration(labelText: 'Assign HOD (Optional)'),
                 items: _hods.map((hod) => DropdownMenuItem(
                   value: hod,
-                  child: Text(hod.username),
+                  child: Text(hod['username'] ?? ''),
                 )).toList(),
                 onChanged: (hod) => setDialogState(() => selectedHOD = hod),
               ),
@@ -445,7 +581,7 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
                     await _client.from('departments').insert({
                       'name': nameController.text.trim(),
                       'code': codeController.text.trim().toUpperCase(),
-                      'hod_id': selectedHOD?.id,
+                      'hod_id': selectedHOD?['id']?.toString(),
                     });
                     Navigator.pop(context);
                     _loadDepartments();
@@ -474,14 +610,9 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
   void _showEditDepartmentDialog(Map<String, dynamic> department) {
     final nameController = TextEditingController(text: department['name']);
     final codeController = TextEditingController(text: department['code']);
-    AppUser? selectedHOD = department['hod'] != null ? 
-      AppUser(
-        id: department['hod']['id'],
-        username: department['hod']['username'],
-        password: '',
-        role: 'HOD',
-        createdAt: DateTime.now(),
-      ) : null;
+    Map<String, dynamic>? selectedHOD = department['hod'] != null
+      ? _hods.firstWhereOrNull((hod) => hod['id'] == department['hod']['id'])
+      : null;
 
     showDialog(
       context: context,
@@ -500,12 +631,12 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
                 decoration: const InputDecoration(labelText: 'Department Code'),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<AppUser>(
+              DropdownButtonFormField<Map<String, dynamic>>(
                 value: selectedHOD,
                 decoration: const InputDecoration(labelText: 'Assign HOD (Optional)'),
                 items: _hods.map((hod) => DropdownMenuItem(
                   value: hod,
-                  child: Text(hod.username),
+                  child: Text(hod['username'] ?? ''),
                 )).toList(),
                 onChanged: (hod) => setDialogState(() => selectedHOD = hod),
               ),
@@ -523,7 +654,7 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
                     await _client.from('departments').update({
                       'name': nameController.text.trim(),
                       'code': codeController.text.trim().toUpperCase(),
-                      'hod_id': selectedHOD?.id,
+                      'hod_id': selectedHOD?['id']?.toString(),
                     }).eq('id', department['id']);
                     Navigator.pop(context);
                     _loadDepartments();
@@ -602,65 +733,67 @@ class _ManageDepartmentsScreenState extends State<ManageDepartmentsScreen> {
         ],
       ),
       backgroundColor: const Color(0xFFE0E1DD),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
-              : _departments.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.apartment, size: 60, color: Colors.pink),
-                          const SizedBox(height: 16),
-                          const Text('No departments found.', style: TextStyle(fontSize: 18)),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: _showAddDepartmentDialog,
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add Department'),
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, foregroundColor: Colors.white),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: _departments.length,
-                      itemBuilder: (context, index) {
-                        final dept = _departments[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: ListTile(
-                            title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
-                                  Text('Code: ${dept['code']}'),
-                                if (dept['hod'] != null) Text('HOD: ${dept['hod']['username']}'),
-                              ],
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
+                : _departments.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.apartment, size: 60, color: Colors.pink),
+                            const SizedBox(height: 16),
+                            const Text('No departments found.', style: TextStyle(fontSize: 18)),
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: _showAddDepartmentDialog,
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add Department'),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, foregroundColor: Colors.white),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => _showEditDepartmentDialog(dept),
-                                  icon: const Icon(Icons.edit, color: Colors.blue),
-                                ),
-                                IconButton(
-                                  onPressed: () => _deleteDepartment(dept['id']),
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-      floatingActionButton: _departments.isEmpty ? null : FloatingActionButton(
-        onPressed: _showAddDepartmentDialog,
-        child: const Icon(Icons.add),
+                          ],
+                        ),
+                      )
+                    : _buildDepartmentList(),
       ),
+    );
+  }
+
+  Widget _buildDepartmentList() {
+    return ListView.builder(
+      itemCount: _departments.length,
+      itemBuilder: (context, index) {
+        final dept = _departments[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ListTile(
+            title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
+                  Text('Code: ${dept['code']}'),
+                if (dept['hod'] != null) Text('HOD: ${dept['hod']['username']}'),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () => _showEditDepartmentDialog(dept),
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                ),
+                IconButton(
+                  onPressed: () => _deleteDepartment(dept['id']),
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -674,7 +807,7 @@ class ManageBatchesScreen extends StatefulWidget {
 class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
   List<Map<String, dynamic>> _batches = [];
   List<Map<String, dynamic>> _departments = [];
-  List<AppUser> _batchAdvisors = [];
+  List<Map<String, dynamic>> _batchAdvisors = [];
   bool _isLoading = true;
   String? _error;
 
@@ -722,14 +855,29 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
 
   Future<void> _loadBatchAdvisors() async {
     try {
-      final advisors = await UserService.getUsersByRole('BatchAdvisor');
-      setState(() => _batchAdvisors = advisors);
+      final advisors = await _client
+          .from('users')
+          .select('id, username, full_name')
+          .eq('role', 'BatchAdvisor')
+          .order('username');
+      print('Loaded ${advisors.length} batch advisors');
+      setState(() => _batchAdvisors = List<Map<String, dynamic>>.from(advisors));
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load batch advisors: $e'), backgroundColor: Colors.red),
-        );
-      }
+      print('Error loading batch advisors: $e');
+      setState(() => _batchAdvisors = []);
+    }
+  }
+
+  int _getAssignedBatchAdvisorsCount() {
+    try {
+      final assignedAdvisorIds = _batches
+          .where((b) => b['batch_advisor'] != null && b['batch_advisor']['id'] != null)
+          .map((b) => b['batch_advisor']['id'])
+          .toSet();
+      return assignedAdvisorIds.length;
+    } catch (e) {
+      print('Error calculating assigned batch advisors: $e');
+      return 0;
     }
   }
 
@@ -737,7 +885,7 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
     final nameController = TextEditingController();
     final yearController = TextEditingController();
     Map<String, dynamic>? selectedDepartment;
-    AppUser? selectedAdvisor;
+    Map<String, dynamic>? selectedAdvisor;
 
     showDialog(
       context: context,
@@ -766,12 +914,12 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
                 onChanged: (dept) => setDialogState(() => selectedDepartment = dept),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<AppUser>(
+              DropdownButtonFormField<Map<String, dynamic>>(
                 value: selectedAdvisor,
                 decoration: const InputDecoration(labelText: 'Assign Batch Advisor (Optional)'),
                 items: _batchAdvisors.map((advisor) => DropdownMenuItem(
                   value: advisor,
-                  child: Text(advisor.username),
+                  child: Text(advisor['username']),
                 )).toList(),
                 onChanged: (advisor) => setDialogState(() => selectedAdvisor = advisor),
               ),
@@ -791,8 +939,8 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
                     await _client.from('batches').insert({
                       'name': nameController.text.trim(),
                       'academic_year': yearController.text.trim(),
-                      'department_id': selectedDepartment!['id'],
-                      'batch_advisor_id': selectedAdvisor?.id,
+                      'department_id': selectedDepartment!['id'].toString(),
+                      'batch_advisor_id': selectedAdvisor?['id']?.toString(),
                     });
                     Navigator.pop(context);
                     _loadBatches();
@@ -821,15 +969,12 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
   void _showEditBatchDialog(Map<String, dynamic> batch) {
     final nameController = TextEditingController(text: batch['name']);
     final yearController = TextEditingController(text: batch['academic_year']);
-    Map<String, dynamic>? selectedDepartment = batch['department'];
-    AppUser? selectedAdvisor = batch['batch_advisor'] != null ? 
-      AppUser(
-        id: batch['batch_advisor']['id'],
-        username: batch['batch_advisor']['username'],
-        password: '',
-        role: 'BatchAdvisor',
-        createdAt: DateTime.now(),
-      ) : null;
+    Map<String, dynamic>? selectedDepartment = _departments.firstWhereOrNull(
+      (dept) => dept['id'] == batch['department']['id'],
+    );
+    Map<String, dynamic>? selectedAdvisor = batch['batch_advisor'] != null
+      ? _batchAdvisors.firstWhereOrNull((advisor) => advisor['id'] == batch['batch_advisor']['id'])
+      : null;
 
     showDialog(
       context: context,
@@ -858,12 +1003,12 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
                 onChanged: (dept) => setDialogState(() => selectedDepartment = dept),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<AppUser>(
+              DropdownButtonFormField<Map<String, dynamic>>(
                 value: selectedAdvisor,
                 decoration: const InputDecoration(labelText: 'Assign Batch Advisor (Optional)'),
                 items: _batchAdvisors.map((advisor) => DropdownMenuItem(
                   value: advisor,
-                  child: Text(advisor.username),
+                  child: Text(advisor['username']),
                 )).toList(),
                 onChanged: (advisor) => setDialogState(() => selectedAdvisor = advisor),
               ),
@@ -883,8 +1028,8 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
                     await _client.from('batches').update({
                       'name': nameController.text.trim(),
                       'academic_year': yearController.text.trim(),
-                      'department_id': selectedDepartment!['id'],
-                      'batch_advisor_id': selectedAdvisor?.id,
+                      'department_id': selectedDepartment!['id'].toString(),
+                      'batch_advisor_id': selectedAdvisor?['id']?.toString(),
                     }).eq('id', batch['id']);
                     Navigator.pop(context);
                     _loadBatches();
@@ -953,8 +1098,8 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Batches'),
-        backgroundColor: const Color(0xFF0D1B2A),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
         actions: [
           IconButton(
             onPressed: _loadBatches,
@@ -963,80 +1108,1142 @@ class _ManageBatchesScreenState extends State<ManageBatchesScreen> {
         ],
       ),
       backgroundColor: const Color(0xFFE0E1DD),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
-              : _batches.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.group, size: 60, color: Colors.pink),
-                          const SizedBox(height: 16),
-                          const Text('No batches found.', style: TextStyle(fontSize: 18)),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: _showAddBatchDialog,
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add Batch'),
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, foregroundColor: Colors.white),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: _batches.length,
-                      itemBuilder: (context, index) {
-                        final batch = _batches[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: ListTile(
-                            title: Text(batch['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Year: ${batch['academic_year']}'),
-                                Text('Department: ${batch['department']['name']} (${batch['department']['code']})'),
-                                if (batch['batch_advisor'] != null) Text('Advisor: ${batch['batch_advisor']['username']}'),
-                              ],
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
+                : _batches.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.school, size: 60, color: Colors.pink),
+                            const SizedBox(height: 16),
+                            const Text('No batches found.', style: TextStyle(fontSize: 18)),
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: _showAddBatchDialog,
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add Batch'),
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, foregroundColor: Colors.white),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => _showEditBatchDialog(batch),
-                                  icon: const Icon(Icons.edit, color: Colors.blue),
-                                ),
-                                IconButton(
-                                  onPressed: () => _deleteBatch(batch['id']),
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-      floatingActionButton: _batches.isEmpty ? null : FloatingActionButton(
+                          ],
+                        ),
+                      )
+                    : _buildBatchList(),
+      ),
+      floatingActionButton: FloatingActionButton(
         onPressed: _showAddBatchDialog,
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.pink,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildBatchList() {
+    return ListView.builder(
+      itemCount: _batches.length,
+      itemBuilder: (context, index) {
+        final batch = _batches[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ListTile(
+            title: Text(batch['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (batch['academic_year'] != null) Text('Year: ${batch['academic_year']}'),
+                if (batch['department'] != null) Text('Department: ${batch['department']['name']}'),
+                if (batch['batch_advisor'] != null) Text('Advisor: ${batch['batch_advisor']['username']}'),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () => _showEditBatchDialog(batch),
+                  icon: const Icon(Icons.edit, color: Colors.blue),
+                ),
+                IconButton(
+                  onPressed: () => _deleteBatch(batch['id']),
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CreateHODScreen extends StatefulWidget {
+  const CreateHODScreen({super.key});
+  @override
+  State<CreateHODScreen> createState() => _CreateHODScreenState();
+}
+
+class _CreateHODScreenState extends State<CreateHODScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _fullNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  Map<String, dynamic>? _selectedDepartment;
+  List<Map<String, dynamic>> _departments = [];
+  bool _isLoading = false;
+  String _message = '';
+  List<Map<String, dynamic>> _hods = [];
+  String? _lastExportedHODsFilePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDepartments();
+    _loadHODs();
+  }
+
+  Future<void> _loadDepartments() async {
+    try {
+      final departments = await _client.from('departments').select('*').order('name');
+      setState(() => _departments = List<Map<String, dynamic>>.from(departments));
+    } catch (e) {
+      setState(() => _message = 'Failed to load departments: $e');
+    }
+  }
+
+  Future<void> _loadHODs() async {
+    try {
+      final hods = await _client
+          .from('hods_view')
+          .select('*')
+          .order('username');
+      setState(() => _hods = List<Map<String, dynamic>>.from(hods));
+    } catch (e) {
+      setState(() => _message = 'Failed to load HODs: $e');
+    }
+  }
+
+  Future<void> _createHODAccount() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      await _client.from('users').insert({
+        'username': _usernameController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'role': 'HOD',
+        'full_name': _fullNameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'department_id': _selectedDepartment?['id']?.toString(),
+      });
+      setState(() { _message = 'HOD account created successfully!'; });
+      _usernameController.clear();
+      _passwordController.clear();
+      _fullNameController.clear();
+      _emailController.clear();
+      _selectedDepartment = null;
+      await _loadHODs();
+    } catch (e) {
+      setState(() { _message = 'Failed to create HOD account: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
+  Future<void> _exportHODs() async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      final hods = await _client
+          .from('users')
+          .select('username, full_name, email, department:department_id(name)')
+          .eq('role', 'HOD');
+      final departmentMap = {for (var d in _departments) d['id']: d['name']};
+      var excelFile = excel.Excel.createExcel();
+      var sheet = excelFile['HODs'];
+      sheet.appendRow(['Username', 'Full Name', 'Email', 'Department']);
+      for (var hod in hods) {
+        sheet.appendRow([
+          hod['username'] ?? '',
+          hod['full_name'] ?? '',
+          hod['email'] ?? '',
+          hod['department']?['name'] ?? '',
+        ]);
+      }
+      final bytes = excelFile.encode();
+      if (kIsWeb) {
+        saveFileWeb(Uint8List.fromList(bytes!), 'hods_export.xlsx');
+        setState(() { _message = 'File downloaded!'; });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('File downloaded!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/hods_export.xlsx');
+        await file.writeAsBytes(bytes!);
+        setState(() {
+          _message = 'File saved at: ${file.path}';
+          _lastExportedHODsFilePath = file.path;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('File saved at: ${file.path}'), backgroundColor: Colors.green),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() { _message = 'Export failed: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
+  void _showEditHODDialog(Map<String, dynamic> hod) {
+    final usernameController = TextEditingController(text: hod['username'] ?? '');
+    final fullNameController = TextEditingController(text: hod['full_name'] ?? '');
+    final emailController = TextEditingController(text: hod['email'] ?? '');
+    Map<String, dynamic>? selectedDepartment = hod['department'] != null
+      ? _departments.firstWhereOrNull((dept) => dept['id'] == hod['department']['id'])
+      : null;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Edit HOD'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(labelText: 'Username'),
+              ),
+              TextField(
+                controller: fullNameController,
+                decoration: const InputDecoration(labelText: 'Full Name'),
+              ),
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<Map<String, dynamic>>(
+                value: selectedDepartment,
+                decoration: const InputDecoration(labelText: 'Department (Optional)'),
+                items: [
+                  const DropdownMenuItem<Map<String, dynamic>>(
+                    value: null,
+                    child: Text('No Department'),
+                  ),
+                  ..._departments.map((dept) => DropdownMenuItem(
+                    value: dept,
+                    child: Text('${dept['name']} (${dept['code']})'),
+                  )),
+                ],
+                onChanged: (dept) => setDialogState(() => selectedDepartment = dept),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await _client.from('users').update({
+                    'username': usernameController.text.trim(),
+                    'full_name': fullNameController.text.trim(),
+                    'email': emailController.text.trim(),
+                    'department_id': selectedDepartment?['id']?.toString(),
+                  }).eq('id', hod['id']);
+                  Navigator.pop(context);
+                  await _loadHODs();
+                  setState(() { _message = 'HOD updated successfully!'; });
+                } catch (e) {
+                  setState(() { _message = 'Update failed: $e'; });
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _deleteHOD(String hodId) async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      await _client.from('users').delete().eq('id', hodId);
+      await _loadHODs();
+      setState(() { _message = 'HOD deleted successfully!'; });
+    } catch (e) {
+      setState(() { _message = 'Delete failed: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create HOD Accounts'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+      ),
+      backgroundColor: const Color(0xFFE0E1DD),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Create HOD Account',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(labelText: 'Username'),
+                          validator: (v) => v == null || v.isEmpty ? 'Enter username' : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(labelText: 'Password'),
+                          obscureText: true,
+                          validator: (v) => v == null || v.isEmpty ? 'Enter password' : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _fullNameController,
+                          decoration: const InputDecoration(labelText: 'Full Name'),
+                          validator: (v) => v == null || v.isEmpty ? 'Enter full name' : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(labelText: 'Email'),
+                          validator: (v) => v == null || v.isEmpty ? 'Enter email' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<Map<String, dynamic>>(
+                          value: _selectedDepartment,
+                          decoration: const InputDecoration(labelText: 'Department (Optional)'),
+                          items: [
+                            const DropdownMenuItem<Map<String, dynamic>>(
+                              value: null,
+                              child: Text('No Department'),
+                            ),
+                            ..._departments.map((dept) => DropdownMenuItem(
+                              value: dept,
+                              child: Text('${dept['name']} (${dept['code']})'),
+                            )),
+                          ],
+                          onChanged: (dept) => setState(() => _selectedDepartment = dept),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _isLoading ? null : _createHODAccount,
+                          child: const Text('Create HOD Account'),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: _isLoading ? null : _exportHODs,
+                          icon: const Icon(Icons.download),
+                          label: const Text('Export HODs'),
+                        ),
+                        if (_lastExportedHODsFilePath != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                await OpenFile.open(_lastExportedHODsFilePath!);
+                              },
+                              icon: const Icon(Icons.open_in_new),
+                              label: const Text('Open Exported File'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                        if (_isLoading) ...[
+                          const SizedBox(height: 20),
+                          const LinearProgressIndicator(),
+                        ],
+                        if (_message.isNotEmpty) ...[
+                          const SizedBox(height: 20),
+                          Text(_message, style: TextStyle(color: _message.contains('success') ? Colors.green : Colors.red)),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'All HODs',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_hods.isEmpty)
+                        const Center(child: Text('No HODs found.'))
+                      else
+                        SizedBox(
+                          height: 300,
+                          child: ListView.builder(
+                            itemCount: _hods.length,
+                            itemBuilder: (context, index) {
+                              final hod = _hods[index];
+                              return Card(
+                                child: ListTile(
+                                  title: Text(hod['full_name'] ?? ''),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Username: ${hod['username'] ?? ''}'),
+                                      if (hod['email'] != null) Text('Email: ${hod['email']}'),
+                                      if (hod['department_id'] != null) Text('Department ID: ${hod['department_id']}'),
+                                    ],
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, color: Colors.blue),
+                                        onPressed: () => _showEditHODDialog(hod),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete, color: Colors.red),
+                                        onPressed: () => _deleteHOD(hod['id']),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class ExcelUploadScreen extends StatefulWidget {
-  const ExcelUploadScreen({super.key});
+class AdminStatusScreen extends StatefulWidget {
+  const AdminStatusScreen({super.key});
   @override
-  State<ExcelUploadScreen> createState() => _ExcelUploadScreenState();
+  State<AdminStatusScreen> createState() => _AdminStatusScreenState();
 }
 
-class _ExcelUploadScreenState extends State<ExcelUploadScreen> {
+class _AdminStatusScreenState extends State<AdminStatusScreen> {
+  Map<String, dynamic> _stats = {};
+  Map<String, List<Map<String, dynamic>>> _userLists = {};
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    setState(() { _isLoading = true; _error = null; });
+    try {
+      final results = await Future.wait([
+        _client.from('users').select('*').inFilter('role', ['Student', 'CR', 'GR']),
+        _client.from('users').select('*').eq('role', 'HOD'),
+        _client.from('users').select('*').eq('role', 'BatchAdvisor'),
+        _client.from('departments').select('id'),
+        _client.from('batches').select('id'),
+        _client.from('complaints').select('status'),
+      ]);
+
+      final students = results[0] as List;
+      final hods = results[1] as List;
+      final advisors = results[2] as List;
+      final departmentCount = results[3].length;
+      final batchCount = results[4].length;
+      
+      final complaints = results[5] as List;
+      final totalComplaints = complaints.length;
+      final pendingComplaints = complaints.where((c) => c['status'] == 'Pending').length;
+      final resolvedComplaints = complaints.where((c) => c['status'] == 'Resolved').length;
+
+      setState(() {
+        _stats = {
+          'students': students.length,
+          'hods': hods.length,
+          'advisors': advisors.length,
+          'departments': departmentCount,
+          'batches': batchCount,
+          'totalComplaints': totalComplaints,
+          'pendingComplaints': pendingComplaints,
+          'resolvedComplaints': resolvedComplaints,
+        };
+        
+        _userLists = {
+          'students': List<Map<String, dynamic>>.from(students),
+          'hods': List<Map<String, dynamic>>.from(hods),
+          'advisors': List<Map<String, dynamic>>.from(advisors),
+        };
+        
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { _isLoading = false; _error = e.toString(); });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load stats: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('System Status'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+        actions: [
+          IconButton(
+            onPressed: _loadStats,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFFEAEFEF),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'User Statistics',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard('Students', _stats['students'] ?? 0, Colors.blue),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _buildStatCard('HODs', _stats['hods'] ?? 0, Colors.green),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard('Batch Advisors', _stats['advisors'] ?? 0, Colors.orange),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'System Statistics',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard('Departments', _stats['departments'] ?? 0, Colors.purple),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _buildStatCard('Batches', _stats['batches'] ?? 0, Colors.teal),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Complaint Statistics',
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard('Total', _stats['totalComplaints'] ?? 0, Colors.indigo),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _buildStatCard('Pending', _stats['pendingComplaints'] ?? 0, Colors.orange),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard('Resolved', _stats['resolvedComplaints'] ?? 0, Colors.green),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, int value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value.toString(),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          ),
+          Text(
+            title,
+            style: TextStyle(fontSize: 12, color: color.withOpacity(0.8)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDepartmentStatCard(Map<String, dynamic> stat) {
+    final dept = stat['department'];
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
+              Text('Code: ${dept['code']}'),
+            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
+            Text('Resolved: ${stat['resolved']}', style: const TextStyle(color: Colors.green)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showUserDetails(String userType) {
+    final users = _userLists[userType] ?? [];
+    final title = userType == 'students' ? 'Students' : 
+                  userType == 'hods' ? 'HODs' : 
+                  userType == 'advisors' ? 'Batch Advisors' : 'Users';
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('$title (${users.length})'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400,
+          child: users.isEmpty
+              ? const Center(child: Text('No users found'))
+              : ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final user = users[index];
+                    final createdAt = DateTime.parse(user['created_at'] ?? DateTime.now().toIso8601String());
+                    
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text(
+                          user['username'] ?? 'Unknown',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Role: ${user['role'] ?? 'Unknown'}'),
+                            Text('Created: ${createdAt.toString().substring(0, 10)}'),
+                            if (user['full_name'] != null) Text('Name: ${user['full_name']}'),
+                            if (user['email'] != null) Text('Email: ${user['email']}'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ComplaintStatsScreen extends StatefulWidget {
+  const ComplaintStatsScreen({super.key});
+  @override
+  State<ComplaintStatsScreen> createState() => _ComplaintStatsScreenState();
+}
+
+class _ComplaintStatsScreenState extends State<ComplaintStatsScreen> {
+  List<Map<String, dynamic>> _departments = [];
+  List<Map<String, dynamic>> _complaints = [];
+  Map<String, dynamic> _overallStats = {};
+  bool _isLoading = true;
+  String _selectedTimeFilter = 'All Time';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() => _isLoading = true);
+    try {
+      await Future.wait([
+        _loadDepartments(),
+        _loadComplaints(),
+      ]);
+      _calculateStats();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load data: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadDepartments() async {
+    final departments = await _client.from('departments').select('*').order('name');
+    setState(() => _departments = List<Map<String, dynamic>>.from(departments));
+  }
+
+  Future<void> _loadComplaints() async {
+    final complaints = await _client
+        .from('complaints')
+        .select('*, student:student_tracking_id(username, role), recipient:recipient_id(username, role)')
+        .order('created_at', ascending: false);
+    setState(() => _complaints = List<Map<String, dynamic>>.from(complaints));
+  }
+
+  void _calculateStats() {
+    final now = DateTime.now();
+    final filteredComplaints = _complaints.where((complaint) {
+      final createdAt = DateTime.parse(complaint['created_at']);
+      
+      switch (_selectedTimeFilter) {
+        case 'Today':
+          final localCreated = createdAt.toLocal();
+          return localCreated.year == now.year &&
+                 localCreated.month == now.month &&
+                 localCreated.day == now.day;
+        case 'This Week':
+          final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+          return createdAt.isAfter(DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day));
+        case 'This Month':
+          return createdAt.isAfter(DateTime(now.year, now.month, 1));
+        default:
+          return true;
+      }
+    }).toList();
+
+    final total = filteredComplaints.length;
+    final pending = filteredComplaints.where((c) => c['status'] == 'Pending').length;
+    final inProgress = filteredComplaints.where((c) => c['status'] == 'In Progress').length;
+    final resolved = filteredComplaints.where((c) => c['status'] == 'Resolved').length;
+    final rejected = filteredComplaints.where((c) => c['status'] == 'Rejected').length;
+
+    setState(() {
+      _overallStats = {
+        'total': total,
+        'pending': pending,
+        'inProgress': inProgress,
+        'resolved': resolved,
+        'rejected': rejected,
+      };
+    });
+  }
+
+  List<Map<String, dynamic>> _getDepartmentStats() {
+    final departmentStats = <Map<String, dynamic>>[];
+    
+    for (final dept in _departments) {
+      final deptComplaints = _complaints.where((complaint) {
+        return complaint['student'] != null && complaint['student']['role'] == 'Student';
+      }).toList();
+
+      final total = deptComplaints.length;
+      final pending = deptComplaints.where((c) => c['status'] == 'Pending').length;
+      final resolved = deptComplaints.where((c) => c['status'] == 'Resolved').length;
+      final rejected = deptComplaints.where((c) => c['status'] == 'Rejected').length;
+
+      departmentStats.add({
+        'department': dept,
+        'total': total,
+        'pending': pending,
+        'resolved': resolved,
+        'rejected': rejected,
+      });
+    }
+
+    return departmentStats;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Complaints'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+        actions: [
+          IconButton(
+            onPressed: _loadData,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFFE0E1DD),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Time Period',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButton<String>(
+                              value: _selectedTimeFilter,
+                              isExpanded: true,
+                              items: ['All Time', 'Today', 'This Week', 'This Month'].map((period) {
+                                return DropdownMenuItem(value: period, child: Text(period));
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() => _selectedTimeFilter = value!);
+                                _calculateStats();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Overall Statistics',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildStatCard('Total', _overallStats['total'] ?? 0, Colors.blue),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildStatCard('Pending', _overallStats['pending'] ?? 0, Colors.orange),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _buildStatCard('In Progress', _overallStats['inProgress'] ?? 0, Colors.purple),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: _buildStatCard('Resolved', _overallStats['resolved'] ?? 0, Colors.green),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Department Statistics',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16),
+                            ..._getDepartmentStats().map((stat) => _buildDepartmentStatCard(stat)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Recent Complaints',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16),
+                            ..._complaints.take(5).map((complaint) => _buildComplaintCard(complaint)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, int value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value.toString(),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          ),
+          Text(
+            title,
+            style: TextStyle(fontSize: 12, color: color.withOpacity(0.8)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDepartmentStatCard(Map<String, dynamic> stat) {
+    final dept = stat['department'];
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
+              Text('Code: ${dept['code']}'),
+            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
+            Text('Resolved: ${stat['resolved']}', style: const TextStyle(color: Colors.green)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildComplaintCard(Map<String, dynamic> complaint) {
+    final status = complaint['status'];
+    final createdAt = DateTime.parse(complaint['created_at']);
+    
+    Color statusColor;
+    switch (status) {
+      case 'Pending':
+        statusColor = Colors.orange;
+        break;
+      case 'In Progress':
+        statusColor = Colors.purple;
+        break;
+      case 'Resolved':
+        statusColor = Colors.green;
+        break;
+      case 'Rejected':
+        statusColor = Colors.red;
+        break;
+      default:
+        statusColor = Colors.grey;
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        title: Text(
+          complaint['complaint_text'] ?? 'No text',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (complaint['student'] != null) Text('From: ${complaint['student']['username']}'),
+            Text('Date: ${createdAt.toString().substring(0, 10)}'),
+          ],
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: statusColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: statusColor),
+          ),
+          child: Text(
+            status,
+            style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImportDataScreen extends StatefulWidget {
+  @override
+  State<ImportDataScreen> createState() => _ImportDataScreenState();
+}
+
+class _ImportDataScreenState extends State<ImportDataScreen> {
   bool _isUploading = false;
   String? _selectedFile;
   List<List<dynamic>> _excelRows = [];
   String _uploadSummary = '';
+
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _idController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String? _selectedBatchId;
+  List<Map<String, dynamic>> _batches = [];
+  bool _isLoading = false;
+  String _message = '';
+  List<Map<String, dynamic>> _students = [];
+  String? _lastExportedFilePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBatches();
+    _loadStudents();
+  }
 
   Future<void> _pickAndDisplayExcel() async {
     setState(() { _isUploading = true; _uploadSummary = ''; _excelRows = []; });
@@ -1091,25 +2298,291 @@ class _ExcelUploadScreenState extends State<ExcelUploadScreen> {
     }
   }
 
+  Future<void> _loadBatches() async {
+    try {
+      final batches = await _client.from('batches').select('*').order('name');
+      setState(() => _batches = List<Map<String, dynamic>>.from(batches));
+    } catch (e) {
+      setState(() => _message = 'Failed to load batches: $e');
+    }
+  }
+
+  Future<void> _loadStudents() async {
+    try {
+      final students = await _client
+          .from('users')
+          .select('id, full_name, roll_number, batch_id, role')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .order('full_name');
+      setState(() => _students = List<Map<String, dynamic>>.from(students));
+    } catch (e) {
+      setState(() => _message = 'Failed to load students: $e');
+    }
+  }
+
+  Future<void> _addStudent() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      if (_selectedBatchId == null) {
+        setState(() { _message = 'Please select a batch!'; _isLoading = false; });
+        return;
+      }
+      final batch = await _client
+          .from('batches')
+          .select('department_id')
+          .eq('id', _selectedBatchId!.toString())
+          .maybeSingle();
+      final departmentId = batch?['department_id'];
+      if (departmentId == null) {
+        setState(() { _message = 'Selected batch has no department assigned!'; _isLoading = false; });
+        return;
+      }
+
+      await _client.from('users').insert({
+        'username': _idController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'role': 'Student',
+        'batch_id': _selectedBatchId!.toString(),
+        'department_id': departmentId.toString(),
+        'full_name': _nameController.text.trim(),
+        'roll_number': _idController.text.trim(),
+      });
+      setState(() { _message = 'Student added successfully!'; });
+      _nameController.clear();
+      _idController.clear();
+      _passwordController.clear();
+      _selectedBatchId = null;
+      await _loadStudents();
+    } catch (e) {
+      setState(() { _message = 'Failed to add student: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
+  Future<void> _exportStudents() async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      final students = await _client
+          .from('users')
+          .select('full_name, roll_number, batch_id, role')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .order('full_name');
+      final batchMap = {for (var b in _batches) b['id']: b['name']};
+      var excelFile = excel.Excel.createExcel();
+      var sheet = excelFile['Students'];
+      sheet.appendRow(['Name', 'ID', 'Batch', 'Role']);
+      for (var s in students) {
+        sheet.appendRow([
+          s['full_name'] ?? '',
+          s['roll_number'] ?? '',
+          batchMap[s['batch_id']] ?? '',
+          s['role'] ?? '',
+        ]);
+      }
+      final bytes = excelFile.encode();
+      if (kIsWeb) {
+        saveFileWeb(Uint8List.fromList(bytes!), 'students_export.xlsx');
+        setState(() { _message = 'File downloaded!'; });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('File downloaded!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/students_export.xlsx');
+        await file.writeAsBytes(bytes!);
+        setState(() {
+          _message = 'File saved at: ${file.path}';
+          _lastExportedFilePath = file.path;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('File saved at: ${file.path}'), backgroundColor: Colors.green),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() { _message = 'Export failed: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
+  Future<void> _fixStudentDepartmentIds() async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      final studentsWithoutDept = await _client
+          .from('users')
+          .select('id, batch_id')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .or('department_id.is.null');
+      
+      int fixedCount = 0;
+      for (final student in studentsWithoutDept) {
+        if (student['batch_id'] != null) {
+          final batch = await _client
+              .from('batches')
+              .select('department_id')
+              .eq('id', student['batch_id'])
+              .maybeSingle();
+          
+          if (batch != null && batch['department_id'] != null) {
+            await _client
+                .from('users')
+                .update({'department_id': batch['department_id'].toString()})
+                .eq('id', student['id']);
+            fixedCount++;
+          }
+        }
+      }
+      
+      setState(() { 
+        _message = 'Fixed department_id for $fixedCount students!'; 
+        _isLoading = false; 
+      });
+      
+      await _loadStudents();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fixed department_id for $fixedCount students!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() { 
+        _message = 'Failed to fix department_ids: $e'; 
+        _isLoading = false; 
+      });
+    }
+  }
+
+  void _showEditStudentDialog(Map<String, dynamic> student) {
+    final nameController = TextEditingController(text: student['full_name'] ?? '');
+    final idController = TextEditingController(text: student['roll_number'] ?? '');
+    String? selectedBatchId = student['batch_id']?.toString();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Student'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Student Name'),
+            ),
+            TextField(
+              controller: idController,
+              decoration: const InputDecoration(labelText: 'Student ID'),
+            ),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              validator: (v) => v == null || v.isEmpty ? 'Enter password' : null,
+            ),
+            DropdownButtonFormField<String>(
+              value: selectedBatchId,
+              items: _batches.map((b) => DropdownMenuItem(
+                value: b['id'].toString(),
+                child: Text(b['name']),
+              )).toList(),
+              onChanged: (v) => selectedBatchId = v,
+              decoration: const InputDecoration(labelText: 'Batch'),
+              validator: (v) => v == null ? 'Select batch' : null,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                String? departmentId;
+                if (selectedBatchId != null) {
+                  final batch = await _client
+                      .from('batches')
+                      .select('department_id')
+                      .eq('id', selectedBatchId!.toString())
+                      .maybeSingle();
+                  departmentId = batch?['department_id'];
+                }
+
+                await _client.from('users').update({
+                  'full_name': nameController.text.trim(),
+                  'roll_number': idController.text.trim(),
+                  'password': _passwordController.text.trim(),
+                  'batch_id': selectedBatchId?.toString(),
+                  'department_id': departmentId?.toString(),
+                }).eq('id', student['id']);
+                Navigator.pop(context);
+                await _loadStudents();
+                setState(() { _message = 'Student updated.'; });
+              } catch (e) {
+                setState(() { _message = 'Update failed: $e'; });
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteStudent(String id) async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      await _client.from('users').delete().eq('id', id);
+      await _loadStudents();
+      setState(() { _message = 'Student deleted.'; });
+    } catch (e) {
+      setState(() { _message = 'Delete failed: $e'; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Excel Data'),
+        title: const Text('Import Data'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
       ),
-      body: ExcelUploadContent(
-        isUploading: _isUploading,
-        selectedFile: _selectedFile,
-        excelRows: _excelRows,
-        uploadSummary: _uploadSummary,
-        onPickAndDisplayExcel: _pickAndDisplayExcel,
-        onDeleteFile: () {
-          setState(() {
-            _selectedFile = null;
-            _excelRows = [];
-            _uploadSummary = '';
-          });
-        },
+      backgroundColor: const Color(0xFFE0E1DD),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 2,
+              child: ExcelUploadContent(
+                isUploading: _isUploading,
+                selectedFile: _selectedFile,
+                excelRows: _excelRows,
+                uploadSummary: _uploadSummary,
+                onPickAndDisplayExcel: _pickAndDisplayExcel,
+                onDeleteFile: () {
+                  setState(() {
+                    _selectedFile = null;
+                    _excelRows = [];
+                    _uploadSummary = '';
+                  });
+                },
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1201,7 +2674,6 @@ class ExcelUploadContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // Remove Expanded here, just show the table or a message
           if (excelRows.isEmpty)
             const Center(child: Text('No data loaded.'))
           else
@@ -1224,1245 +2696,6 @@ class ExcelUploadContent extends StatelessWidget {
   }
 }
 
-class AssignBatchAdvisorsScreen extends StatefulWidget {
-  const AssignBatchAdvisorsScreen({super.key});
-  @override
-  State<AssignBatchAdvisorsScreen> createState() => _AssignBatchAdvisorsScreenState();
-}
-
-class _AssignBatchAdvisorsScreenState extends State<AssignBatchAdvisorsScreen> {
-  List<Map<String, dynamic>> _batches = [];
-  List<AppUser> _batchAdvisors = [];
-  bool _isLoading = true;
-
-  // For creating a new batch advisor
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isCreating = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadBatches();
-    _loadBatchAdvisors();
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadBatches() async {
-    try {
-      final batches = await _client
-          .from('batches')
-          .select('*, department:department_id(name, code), batch_advisor:batch_advisor_id(username, id)')
-          .order('name');
-      
-      setState(() {
-        _batches = List<Map<String, dynamic>>.from(batches);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load batches: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  Future<void> _loadBatchAdvisors() async {
-    try {
-      final advisors = await UserService.getUsersByRole('BatchAdvisor');
-      setState(() => _batchAdvisors = advisors);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load batch advisors: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  Future<void> _createBatchAdvisor() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _isCreating = true);
-    try {
-      await UserService.addUser(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
-        'BatchAdvisor',
-      );
-      _formKey.currentState!.reset();
-      _usernameController.clear();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
-      await _loadBatchAdvisors();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Batch Advisor created successfully!'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create Batch Advisor: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() => _isCreating = false);
-    }
-  }
-
-  void _showAssignAdvisorDialog(Map<String, dynamic> batch) {
-    AppUser? selectedAdvisor = batch['batch_advisor'] != null ? 
-      AppUser(
-        id: batch['batch_advisor']['id'],
-        username: batch['batch_advisor']['username'],
-        password: '',
-        role: 'BatchAdvisor',
-        createdAt: DateTime.now(),
-      ) : null;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('Assign Advisor to ${batch['name']}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Department: ${batch['department']['name']}'),
-              Text('Academic Year: ${batch['academic_year']}'),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<AppUser>(
-                value: selectedAdvisor,
-                decoration: const InputDecoration(labelText: 'Select Batch Advisor'),
-                items: [
-                  const DropdownMenuItem<AppUser>(
-                    value: null,
-                    child: Text('No Advisor'),
-                  ),
-                  ..._batchAdvisors.map((advisor) => DropdownMenuItem(
-                    value: advisor,
-                    child: Text(advisor.username),
-                  )),
-                ],
-                onChanged: (advisor) => setDialogState(() => selectedAdvisor = advisor),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  await _client.from('batches').update({
-                    'batch_advisor_id': selectedAdvisor?.id,
-                  }).eq('id', batch['id']);
-                  Navigator.pop(context);
-                  _loadBatches();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(selectedAdvisor != null 
-                          ? 'Advisor assigned successfully!' 
-                          : 'Advisor removed successfully!'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to assign advisor: $e'), backgroundColor: Colors.red),
-                    );
-                  }
-                }
-              },
-              child: const Text('Assign'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _exportBatchAdvisors() async {
-    setState(() { _isLoading = true; });
-    try {
-      final advisors = await _client.from('users').select('username, password').eq('role', 'BatchAdvisor');
-      var excelFile = excel.Excel.createExcel();
-      var sheet = excelFile['BatchAdvisors'];
-      sheet.appendRow(['Username/Email', 'Password', 'Role']);
-      for (var a in advisors) {
-        sheet.appendRow([
-          a['username'] ?? '',
-          a['password'] ?? '',
-          'BatchAdvisor',
-        ]);
-      }
-      final bytes = excelFile.encode();
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/batch_advisors_export.xlsx');
-      await file.writeAsBytes(bytes!);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Batch Advisors exported: ${file.path}'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() { _isLoading = false; });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Batch Advisors'),
-        backgroundColor: const Color(0xFF0D1B2A),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: () {
-              _loadBatches();
-              _loadBatchAdvisors();
-            },
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      backgroundColor: const Color(0xFFE0E1DD),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Create Batch Advisor Form
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Create New Batch Advisor',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _usernameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Username/Email',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Please enter username';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _passwordController,
-                              decoration: const InputDecoration(
-                                labelText: 'Password',
-                                border: OutlineInputBorder(),
-                              ),
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter password';
-                                }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _confirmPasswordController,
-                              decoration: const InputDecoration(
-                                labelText: 'Confirm Password',
-                                border: OutlineInputBorder(),
-                              ),
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please confirm password';
-                                }
-                                if (value != _passwordController.text) {
-                                  return 'Passwords do not match';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _isCreating ? null : _createBatchAdvisor,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.pink,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                ),
-                                child: _isCreating
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                                      )
-                                    : const Text('Create Batch Advisor'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Batch List
-                  const Text(
-                    'Assign Advisors to Batches',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  ..._batches.map((batch) => Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          title: Text(batch['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Department: ${batch['department']['name']} (${batch['department']['code']})'),
-                              Text('Academic Year: ${batch['academic_year']}'),
-                              if (batch['batch_advisor'] != null)
-                                Text('Current Advisor: ${batch['batch_advisor']['username']}',
-                                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                              else
-                                const Text('No Advisor Assigned',
-                                    style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          trailing: batch['batch_advisor'] == null
-                              ? ElevatedButton(
-                                  onPressed: () => _showAssignAdvisorDialog(batch),
-                                  child: const Text('Assign'),
-                                )
-                              : null,
-                        ),
-                      )),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: _isLoading ? null : _exportBatchAdvisors,
-                    icon: const Icon(Icons.download),
-                    label: const Text('Export Batch Advisors'),
-                  ),
-                ],
-              ),
-            ),
-    );
-  }
-}
-
-class CreateHODScreen extends StatefulWidget {
-  const CreateHODScreen({super.key});
-  @override
-  State<CreateHODScreen> createState() => _CreateHODScreenState();
-}
-
-class _CreateHODScreenState extends State<CreateHODScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  List<Map<String, dynamic>> _departments = [];
-  Map<String, dynamic>? _selectedDepartment;
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDepartments();
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadDepartments() async {
-    try {
-      final departments = await _client
-          .from('departments')
-          .select('*, hod:hod_id(username, id)')
-          .order('name');
-      setState(() => _departments = List<Map<String, dynamic>>.from(departments));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load departments: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  Future<void> _createHODAccount() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      // Create HOD user account
-      await UserService.addUser(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
-        'HOD',
-      );
-
-      // Fetch the created HOD user
-      final hodUser = await UserService.authenticateUser(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
-        'HOD',
-      );
-
-      // If department is selected, assign HOD to department
-      if (_selectedDepartment != null && hodUser != null) {
-        await _client.from('departments').update({
-          'hod_id': hodUser.id,
-        }).eq('id', _selectedDepartment!['id']);
-      }
-
-      // Clear form
-      _formKey.currentState!.reset();
-      _usernameController.clear();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
-      setState(() => _selectedDepartment = null);
-
-      // Reload departments to show updated HOD assignments
-      await _loadDepartments();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('HOD account created successfully!${_selectedDepartment != null ? ' Assigned to ${_selectedDepartment!['name']}.' : ''}'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create HOD account: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _exportHODs() async {
-    setState(() { _isLoading = true; });
-    try {
-      final hods = await _client.from('users').select('username, password').eq('role', 'HOD');
-      var excelFile = excel.Excel.createExcel();
-      var sheet = excelFile['HODs'];
-      sheet.appendRow(['Username/Email', 'Password', 'Role']);
-      for (var h in hods) {
-        sheet.appendRow([
-          h['username'] ?? '',
-          h['password'] ?? '',
-          'HOD',
-        ]);
-      }
-      final bytes = excelFile.encode();
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/hods_export.xlsx');
-      await file.writeAsBytes(bytes!);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('HODs exported: ${file.path}'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() { _isLoading = false; });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('HOD Accounts'),
-        backgroundColor: const Color(0xFF0D1B2A),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: _loadDepartments,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      backgroundColor: const Color(0xFFE0E1DD),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Create HOD Account Form
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Create New HOD Account',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Username/Email',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter username';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter password';
-                          }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<Map<String, dynamic>>(
-                        value: _selectedDepartment,
-                        decoration: const InputDecoration(
-                          labelText: 'Assign to Department (Optional)',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: [
-                          const DropdownMenuItem<Map<String, dynamic>>(
-                            value: null,
-                            child: Text('No Department'),
-                          ),
-                          ..._departments.map((dept) => DropdownMenuItem(
-                            value: dept,
-                            child: Text('${dept['name']} (${dept['code']})'),
-                          )),
-                        ],
-                        onChanged: (dept) => setState(() => _selectedDepartment = dept),
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _createHODAccount,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          child: _isLoading
-                              ? const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                                    ),
-                                    SizedBox(width: 12),
-                                    Text('Creating...'),
-                                  ],
-                                )
-                              : const Text('Create HOD Account'),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        onPressed: _isLoading ? null : _exportHODs,
-                        icon: const Icon(Icons.download),
-                        label: const Text('Export HODs'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            // Department HOD Assignments
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Current Department HOD Assignments',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 16),
-                    ..._departments.map((dept) => ListTile(
-                      title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
-                            Text('Code: ${dept['code']}'),
-                          if (dept['hod'] != null) Text('HOD: ${dept['hod']['username']}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                        ],
-                      ),
-                      trailing: dept['hod'] != null
-                          ? Text('HOD: ${dept['hod']['username']}', style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold))
-                          : const SizedBox.shrink(),
-                    )),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ComplaintStatsScreen extends StatefulWidget {
-  const ComplaintStatsScreen({super.key});
-  @override
-  State<ComplaintStatsScreen> createState() => _ComplaintStatsScreenState();
-}
-
-class _ComplaintStatsScreenState extends State<ComplaintStatsScreen> {
-  List<Map<String, dynamic>> _departments = [];
-  List<Map<String, dynamic>> _complaints = [];
-  Map<String, dynamic> _overallStats = {};
-  bool _isLoading = true;
-  String _selectedTimeFilter = 'All Time';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    try {
-      await Future.wait([
-        _loadDepartments(),
-        _loadComplaints(),
-      ]);
-      _calculateStats();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load data: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _loadDepartments() async {
-    final departments = await _client.from('departments').select('*').order('name');
-    setState(() => _departments = List<Map<String, dynamic>>.from(departments));
-  }
-
-  Future<void> _loadComplaints() async {
-    final complaints = await _client
-        .from('complaints')
-        .select('*, student:student_tracking_id(username, role), recipient:recipient_id(username, role)')
-        .order('created_at', ascending: false);
-    setState(() => _complaints = List<Map<String, dynamic>>.from(complaints));
-  }
-
-  void _calculateStats() {
-    final now = DateTime.now();
-    final filteredComplaints = _complaints.where((complaint) {
-      final createdAt = DateTime.parse(complaint['created_at']);
-      
-      switch (_selectedTimeFilter) {
-        case 'Today':
-          return createdAt.isAfter(DateTime(now.year, now.month, now.day));
-        case 'This Week':
-          final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-          return createdAt.isAfter(DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day));
-        case 'This Month':
-          return createdAt.isAfter(DateTime(now.year, now.month, 1));
-        default:
-          return true; // All Time
-      }
-    }).toList();
-
-    final total = filteredComplaints.length;
-    final pending = filteredComplaints.where((c) => c['status'] == 'Pending').length;
-    final inProgress = filteredComplaints.where((c) => c['status'] == 'In Progress').length;
-    final resolved = filteredComplaints.where((c) => c['status'] == 'Resolved').length;
-    final rejected = filteredComplaints.where((c) => c['status'] == 'Rejected').length;
-
-    setState(() {
-      _overallStats = {
-        'total': total,
-        'pending': pending,
-        'inProgress': inProgress,
-        'resolved': resolved,
-        'rejected': rejected,
-      };
-    });
-  }
-
-  List<Map<String, dynamic>> _getDepartmentStats() {
-    final departmentStats = <Map<String, dynamic>>[];
-    
-    for (final dept in _departments) {
-      final deptComplaints = _complaints.where((complaint) {
-        // This is a simplified approach - in a real app you'd have proper department tracking
-        return complaint['student'] != null && complaint['student']['role'] == 'Student';
-      }).toList();
-
-      final total = deptComplaints.length;
-      final pending = deptComplaints.where((c) => c['status'] == 'Pending').length;
-      final resolved = deptComplaints.where((c) => c['status'] == 'Resolved').length;
-      final rejected = deptComplaints.where((c) => c['status'] == 'Rejected').length;
-
-      departmentStats.add({
-        'department': dept,
-        'total': total,
-        'pending': pending,
-        'resolved': resolved,
-        'rejected': rejected,
-      });
-    }
-
-    return departmentStats;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Complaints'),
-        backgroundColor: const Color(0xFF0D1B2A),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: _loadData,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
-      backgroundColor: const Color(0xFFE0E1DD),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Time Filter
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Time Period',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButton<String>(
-                            value: _selectedTimeFilter,
-                            isExpanded: true,
-                            items: ['All Time', 'Today', 'This Week', 'This Month'].map((period) {
-                              return DropdownMenuItem(value: period, child: Text(period));
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() => _selectedTimeFilter = value!);
-                              _calculateStats();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Overall Statistics
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Overall Statistics',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildStatCard('Total', _overallStats['total'] ?? 0, Colors.blue),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _buildStatCard('Pending', _overallStats['pending'] ?? 0, Colors.orange),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildStatCard('In Progress', _overallStats['inProgress'] ?? 0, Colors.purple),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _buildStatCard('Resolved', _overallStats['resolved'] ?? 0, Colors.green),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildStatCard('Rejected', _overallStats['rejected'] ?? 0, Colors.red),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Container(), // Empty for alignment
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Department Statistics
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Department Statistics',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          ..._getDepartmentStats().map((stat) => _buildDepartmentStatCard(stat)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Recent Complaints
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Recent Complaints',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          ..._complaints.take(5).map((complaint) => _buildComplaintCard(complaint)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget _buildStatCard(String title, int value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value.toString(),
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
-          ),
-          Text(
-            title,
-            style: TextStyle(fontSize: 12, color: color.withOpacity(0.8)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDepartmentStatCard(Map<String, dynamic> stat) {
-    final dept = stat['department'];
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: Text(dept['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (dept['code'] != null && dept['code'].toString().trim().isNotEmpty)
-              Text('Code: ${dept['code']}'),
-            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
-            Text('Resolved: ${stat['resolved']}', style: const TextStyle(color: Colors.green)),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('Total: ${stat['total']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Pending: ${stat['pending']}', style: const TextStyle(color: Colors.orange)),
-            Text('Resolved: ${stat['resolved']}', style: const TextStyle(color: Colors.green)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildComplaintCard(Map<String, dynamic> complaint) {
-    final status = complaint['status'];
-    final createdAt = DateTime.parse(complaint['created_at']);
-    
-    Color statusColor;
-    switch (status) {
-      case 'Pending':
-        statusColor = Colors.orange;
-        break;
-      case 'In Progress':
-        statusColor = Colors.purple;
-        break;
-      case 'Resolved':
-        statusColor = Colors.green;
-        break;
-      case 'Rejected':
-        statusColor = Colors.red;
-        break;
-      default:
-        statusColor = Colors.grey;
-    }
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: Text(
-          complaint['complaint_text'] ?? 'No text',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (complaint['student'] != null) Text('From: ${complaint['student']['username']}'),
-            Text('Date: ${createdAt.toString().substring(0, 10)}'),
-          ],
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: statusColor),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AddStudentScreen extends StatefulWidget {
-  const AddStudentScreen({super.key});
-  @override
-  State<AddStudentScreen> createState() => _AddStudentScreenState();
-}
-
-class _AddStudentScreenState extends State<AddStudentScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _idController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String? _selectedBatchId;
-  List<Map<String, dynamic>> _batches = [];
-  bool _isLoading = false;
-  String _message = '';
-  List<Map<String, dynamic>> _students = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadBatches();
-    _loadStudents();
-  }
-
-  Future<void> _loadBatches() async {
-    try {
-      final batches = await _client.from('batches').select('*').order('name');
-      setState(() => _batches = List<Map<String, dynamic>>.from(batches));
-    } catch (e) {
-      setState(() => _message = 'Failed to load batches: $e');
-    }
-  }
-
-  Future<void> _loadStudents() async {
-    try {
-      final students = await _client.from('users').select('id, full_name, roll_number, batch_id').eq('role', 'Student');
-      setState(() => _students = List<Map<String, dynamic>>.from(students));
-    } catch (e) {
-      setState(() => _message = 'Failed to load students: $e');
-    }
-  }
-
-  Future<void> _addStudent() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() { _isLoading = true; _message = ''; });
-    try {
-      await _client.from('users').insert({
-        'username': _idController.text.trim(),
-        'password': _passwordController.text.trim(),
-        'role': 'Student',
-        'batch_id': _selectedBatchId,
-        'full_name': _nameController.text.trim(),
-        'roll_number': _idController.text.trim(),
-      });
-      setState(() { _message = 'Student added successfully!'; });
-      _nameController.clear();
-      _idController.clear();
-      _passwordController.clear();
-      _selectedBatchId = null;
-      await _loadStudents();
-    } catch (e) {
-      setState(() { _message = 'Failed to add student: $e'; });
-    } finally {
-      setState(() { _isLoading = false; });
-    }
-  }
-
-  Future<void> _deleteStudent(String id) async {
-    setState(() { _isLoading = true; _message = ''; });
-    try {
-      await _client.from('users').delete().eq('id', id);
-      await _loadStudents();
-      setState(() { _message = 'Student deleted.'; });
-    } catch (e) {
-      setState(() { _message = 'Delete failed: $e'; });
-    } finally {
-      setState(() { _isLoading = false; });
-    }
-  }
-
-  void _showEditStudentDialog(Map<String, dynamic> student) {
-    final nameController = TextEditingController(text: student['full_name'] ?? '');
-    final idController = TextEditingController(text: student['roll_number'] ?? '');
-    String? selectedBatchId = student['batch_id']?.toString();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Student'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Student Name'),
-            ),
-            TextField(
-              controller: idController,
-              decoration: const InputDecoration(labelText: 'Student ID'),
-            ),
-            TextFormField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: (v) => v == null || v.isEmpty ? 'Enter password' : null,
-            ),
-            DropdownButtonFormField<String>(
-              value: selectedBatchId,
-              items: _batches.map((b) => DropdownMenuItem(
-                value: b['id'].toString(),
-                child: Text(b['name']),
-              )).toList(),
-              onChanged: (v) => selectedBatchId = v,
-              decoration: const InputDecoration(labelText: 'Batch'),
-              validator: (v) => v == null ? 'Select batch' : null,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                await _client.from('users').update({
-                  'full_name': nameController.text.trim(),
-                  'roll_number': idController.text.trim(),
-                  'password': _passwordController.text.trim(),
-                  'batch_id': selectedBatchId,
-                }).eq('id', student['id']);
-                Navigator.pop(context);
-                await _loadStudents();
-                setState(() { _message = 'Student updated.'; });
-              } catch (e) {
-                setState(() { _message = 'Update failed: $e'; });
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _exportStudents() async {
-    setState(() { _isLoading = true; _message = ''; });
-    try {
-      final students = await _client.from('users').select('full_name, roll_number, batch_id').eq('role', 'Student');
-      final batchMap = {for (var b in _batches) b['id']: b['name']};
-      var excelFile = excel.Excel.createExcel();
-      var sheet = excelFile['Students'];
-      sheet.appendRow(['Name', 'ID', 'Batch']);
-      for (var s in students) {
-        sheet.appendRow([
-          s['full_name'] ?? '',
-          s['roll_number'] ?? '',
-          batchMap[s['batch_id']] ?? '',
-        ]);
-      }
-      final bytes = excelFile.encode();
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/students_export.xlsx');
-      await file.writeAsBytes(bytes!);
-      setState(() { _message = 'File saved at: ${file.path}'; });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File saved at: ${file.path}'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      setState(() { _message = 'Export failed: $e'; });
-    } finally {
-      setState(() { _isLoading = false; });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Student')),
-      body: AddStudentContent(
-        formKey: _formKey,
-        nameController: _nameController,
-        idController: _idController,
-        passwordController: _passwordController,
-        selectedBatchId: _selectedBatchId,
-        batches: _batches,
-        isLoading: _isLoading,
-        message: _message,
-        students: _students,
-        onBatchChanged: (v) => setState(() => _selectedBatchId = v),
-        onAddStudent: _addStudent,
-        onExportStudents: _exportStudents,
-        onEditStudent: _showEditStudentDialog,
-        onDeleteStudent: _deleteStudent,
-      ),
-    );
-  }
-}
-
 class AddStudentContent extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController nameController;
@@ -2476,8 +2709,11 @@ class AddStudentContent extends StatelessWidget {
   final ValueChanged<String?> onBatchChanged;
   final VoidCallback onAddStudent;
   final VoidCallback onExportStudents;
+  final VoidCallback onFixDepartmentIds;
   final void Function(Map<String, dynamic>) onEditStudent;
   final void Function(String) onDeleteStudent;
+  final String? lastExportedFilePath;
+  final VoidCallback? onOpenExportedFile;
 
   const AddStudentContent({
     super.key,
@@ -2493,8 +2729,11 @@ class AddStudentContent extends StatelessWidget {
     required this.onBatchChanged,
     required this.onAddStudent,
     required this.onExportStudents,
+    required this.onFixDepartmentIds,
     required this.onEditStudent,
     required this.onDeleteStudent,
+    this.lastExportedFilePath,
+    this.onOpenExportedFile,
   });
 
   @override
@@ -2548,6 +2787,16 @@ class AddStudentContent extends StatelessWidget {
                   icon: const Icon(Icons.download),
                   label: const Text('Export Students'),
                 ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: isLoading ? null : onFixDepartmentIds,
+                  icon: const Icon(Icons.build),
+                  label: const Text('Fix Department IDs'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
                 if (isLoading) ...[
                   const SizedBox(height: 20),
                   const LinearProgressIndicator(),
@@ -2562,7 +2811,6 @@ class AddStudentContent extends StatelessWidget {
           const SizedBox(height: 32),
           const Text('All Students', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 12),
-          // Remove Expanded here, just show the list or a message
           if (students.isEmpty)
             const Center(child: Text('No students found.'))
           else
@@ -2579,7 +2827,7 @@ class AddStudentContent extends StatelessWidget {
                   return Card(
                     child: ListTile(
                       title: Text(s['full_name'] ?? ''),
-                      subtitle: Text('ID: ${s['roll_number'] ?? ''} | Batch: $batchName'),
+                      subtitle: Text('ID: ${s['roll_number'] ?? ''} | Batch: $batchName | Role: ${s['role'] ?? 'Student'}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -2604,20 +2852,262 @@ class AddStudentContent extends StatelessWidget {
   }
 }
 
-// New screen that combines ExcelUploadScreen and AddStudentScreen
-class ImportDataScreen extends StatefulWidget {
+class FixUserAccountsScreen extends StatefulWidget {
+  const FixUserAccountsScreen({super.key});
   @override
-  State<ImportDataScreen> createState() => _ImportDataScreenState();
+  State<FixUserAccountsScreen> createState() => _FixUserAccountsScreenState();
 }
 
-class _ImportDataScreenState extends State<ImportDataScreen> {
-  // Excel upload state
-  bool _isUploading = false;
-  String? _selectedFile;
-  List<List<dynamic>> _excelRows = [];
-  String _uploadSummary = '';
+class _FixUserAccountsScreenState extends State<FixUserAccountsScreen> {
+  List<Map<String, dynamic>> _users = [];
+  bool _isLoading = true;
+  String _message = '';
 
-  // Add student state
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+
+  Future<void> _loadUsers() async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      final users = await _client
+          .from('users')
+          .select('*')
+          .order('created_at', ascending: false);
+      setState(() {
+        _users = List<Map<String, dynamic>>.from(users);
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() { 
+        _isLoading = false; 
+        _message = 'Failed to load users: $e'; 
+      });
+    }
+  }
+
+  Future<void> _fixBatchAdvisorRole(String userId, String username) async {
+    try {
+      await _client
+          .from('users')
+          .update({'role': 'BatchAdvisor'})
+          .eq('id', userId);
+      
+      setState(() { _message = 'Fixed role for user: $username'; });
+      await _loadUsers();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully fixed role for $username'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() { _message = 'Failed to fix role: $e'; });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to fix role: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteUser(String userId, String username) async {
+    try {
+      await _client.from('users').delete().eq('id', userId);
+      setState(() { _message = 'Deleted user: $username'; });
+      await _loadUsers();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully deleted user: $username'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() { _message = 'Failed to delete user: $e'; });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete user: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Fix User Accounts'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+        actions: [
+          IconButton(
+            onPressed: _loadUsers,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      backgroundColor: const Color(0xFFE0E1DD),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'User Account Issues',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'This screen helps you identify and fix user account issues. Look for users with incorrect roles or other problems.',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            if (_message.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                _message,
+                                style: TextStyle(
+                                  color: _message.contains('Failed') ? Colors.red : Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'All Users',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16),
+                            if (_users.isEmpty)
+                              const Center(child: Text('No users found.'))
+                            else
+                              ..._users.map((user) => _buildUserCard(user)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildUserCard(Map<String, dynamic> user) {
+    final username = user['username'] ?? '';
+    final role = user['role'] ?? '';
+    final createdAt = DateTime.parse(user['created_at'] ?? DateTime.now().toIso8601String());
+    
+    final hasIssues = role.isEmpty || 
+                     (username.contains('teacher') && role != 'BatchAdvisor') ||
+                     (username.contains('@') && !username.contains('@university.com'));
+    
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      color: hasIssues ? Colors.orange.withOpacity(0.1) : null,
+      child: ListTile(
+        title: Text(
+          username,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: hasIssues ? Colors.orange[800] : null,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Role: $role'),
+            Text('Created: ${createdAt.toString().substring(0, 10)}'),
+            if (hasIssues)
+              Text(
+                '⚠️ Potential issue detected',
+                style: TextStyle(color: Colors.orange[800], fontWeight: FontWeight.bold),
+              ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (username.contains('teacher') && role != 'BatchAdvisor')
+              IconButton(
+                icon: const Icon(Icons.build, color: Colors.blue),
+                tooltip: 'Fix role to BatchAdvisor',
+                onPressed: () => _fixBatchAdvisorRole(user['id'], username),
+              ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              tooltip: 'Delete user',
+              onPressed: () => _showDeleteConfirmation(user['id'], username),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(String userId, String username) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete User'),
+        content: Text('Are you sure you want to delete user: $username?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteUser(userId, username);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class StudentsScreen extends StatefulWidget {
+  @override
+  State<StudentsScreen> createState() => _StudentsScreenState();
+}
+
+class _StudentsScreenState extends State<StudentsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _idController = TextEditingController();
@@ -2627,65 +3117,13 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
   bool _isLoading = false;
   String _message = '';
   List<Map<String, dynamic>> _students = [];
+  String? _lastExportedFilePath;
 
   @override
   void initState() {
     super.initState();
     _loadBatches();
     _loadStudents();
-  }
-
-  Future<void> _pickAndDisplayExcel() async {
-    setState(() { _isUploading = true; _uploadSummary = ''; _excelRows = []; });
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null) {
-        setState(() => _selectedFile = result.files.single.name);
-        Uint8List? bytes = result.files.single.bytes;
-        if (bytes == null && result.files.single.path != null) {
-          bytes = File(result.files.single.path!).readAsBytesSync();
-        }
-        if (bytes == null) {
-          setState(() { _uploadSummary = 'Upload failed: Could not read file bytes.'; });
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to read file bytes.'), backgroundColor: Colors.red),
-            );
-          }
-          setState(() { _isUploading = false; });
-          return;
-        }
-        try {
-          var excelFile = excel.Excel.decodeBytes(bytes);
-          List<List<dynamic>> allRows = [];
-          for (var table in excelFile.tables.keys) {
-            for (var row in excelFile.tables[table]!.rows) {
-              allRows.add(row.map((cell) => cell?.value ?? '').toList());
-            }
-          }
-          setState(() {
-            _excelRows = allRows;
-            _uploadSummary = 'Upload complete! ${_excelRows.length} rows loaded.';
-          });
-        } catch (e) {
-          setState(() { _uploadSummary = 'Upload failed: Not a valid Excel file.'; });
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Upload failed: Not a valid Excel file.'), backgroundColor: Colors.red),
-            );
-          }
-        }
-      }
-    } catch (e) {
-      setState(() { _uploadSummary = 'Upload failed: $e'; });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload Excel data: $e'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      setState(() { _isUploading = false; });
-    }
   }
 
   Future<void> _loadBatches() async {
@@ -2699,7 +3137,11 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
 
   Future<void> _loadStudents() async {
     try {
-      final students = await _client.from('users').select('id, full_name, roll_number, batch_id').eq('role', 'Student');
+      final students = await _client
+          .from('users')
+          .select('id, full_name, roll_number, batch_id, role')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .order('full_name');
       setState(() => _students = List<Map<String, dynamic>>.from(students));
     } catch (e) {
       setState(() => _message = 'Failed to load students: $e');
@@ -2710,11 +3152,27 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _isLoading = true; _message = ''; });
     try {
+      if (_selectedBatchId == null) {
+        setState(() { _message = 'Please select a batch!'; _isLoading = false; });
+        return;
+      }
+      final batch = await _client
+          .from('batches')
+          .select('department_id')
+          .eq('id', _selectedBatchId!.toString())
+          .maybeSingle();
+      final departmentId = batch?['department_id'];
+      if (departmentId == null) {
+        setState(() { _message = 'Selected batch has no department assigned!'; _isLoading = false; });
+        return;
+      }
+
       await _client.from('users').insert({
         'username': _idController.text.trim(),
         'password': _passwordController.text.trim(),
         'role': 'Student',
-        'batch_id': _selectedBatchId,
+        'batch_id': _selectedBatchId!.toString(),
+        'department_id': departmentId.toString(),
         'full_name': _nameController.text.trim(),
         'roll_number': _idController.text.trim(),
       });
@@ -2734,32 +3192,101 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
   Future<void> _exportStudents() async {
     setState(() { _isLoading = true; _message = ''; });
     try {
-      final students = await _client.from('users').select('full_name, roll_number, batch_id').eq('role', 'Student');
+      final students = await _client
+          .from('users')
+          .select('full_name, roll_number, batch_id, role')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .order('full_name');
       final batchMap = {for (var b in _batches) b['id']: b['name']};
       var excelFile = excel.Excel.createExcel();
       var sheet = excelFile['Students'];
-      sheet.appendRow(['Name', 'ID', 'Batch']);
+      sheet.appendRow(['Name', 'ID', 'Batch', 'Role']);
       for (var s in students) {
         sheet.appendRow([
           s['full_name'] ?? '',
           s['roll_number'] ?? '',
           batchMap[s['batch_id']] ?? '',
+          s['role'] ?? '',
         ]);
       }
       final bytes = excelFile.encode();
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/students_export.xlsx');
-      await file.writeAsBytes(bytes!);
-      setState(() { _message = 'File saved at: ${file.path}'; });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File saved at: ${file.path}'), backgroundColor: Colors.green),
-        );
+      if (kIsWeb) {
+        saveFileWeb(Uint8List.fromList(bytes!), 'students_export.xlsx');
+        setState(() { _message = 'File downloaded!'; });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('File downloaded!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final dir = await getTemporaryDirectory();
+        final file = File('${dir.path}/students_export.xlsx');
+        await file.writeAsBytes(bytes!);
+        setState(() {
+          _message = 'File saved at: ${file.path}';
+          _lastExportedFilePath = file.path;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('File saved at: ${file.path}'), backgroundColor: Colors.green),
+          );
+        }
       }
     } catch (e) {
       setState(() { _message = 'Export failed: $e'; });
     } finally {
       setState(() { _isLoading = false; });
+    }
+  }
+
+  Future<void> _fixStudentDepartmentIds() async {
+    setState(() { _isLoading = true; _message = ''; });
+    try {
+      final studentsWithoutDept = await _client
+          .from('users')
+          .select('id, batch_id')
+          .inFilter('role', ['Student', 'CR', 'GR'])
+          .or('department_id.is.null');
+      
+      int fixedCount = 0;
+      for (final student in studentsWithoutDept) {
+        if (student['batch_id'] != null) {
+          final batch = await _client
+              .from('batches')
+              .select('department_id')
+              .eq('id', student['batch_id'])
+              .maybeSingle();
+          
+          if (batch != null && batch['department_id'] != null) {
+            await _client
+                .from('users')
+                .update({'department_id': batch['department_id'].toString()})
+                .eq('id', student['id']);
+            fixedCount++;
+          }
+        }
+      }
+      
+      setState(() { 
+        _message = 'Fixed department_id for $fixedCount students!'; 
+        _isLoading = false; 
+      });
+      
+      await _loadStudents();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fixed department_id for $fixedCount students!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() { 
+        _message = 'Failed to fix department_ids: $e'; 
+        _isLoading = false; 
+      });
     }
   }
 
@@ -2808,11 +3335,22 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
           ElevatedButton(
             onPressed: () async {
               try {
+                String? departmentId;
+                if (selectedBatchId != null) {
+                  final batch = await _client
+                      .from('batches')
+                      .select('department_id')
+                      .eq('id', selectedBatchId!.toString())
+                      .maybeSingle();
+                  departmentId = batch?['department_id'];
+                }
+
                 await _client.from('users').update({
                   'full_name': nameController.text.trim(),
                   'roll_number': idController.text.trim(),
                   'password': _passwordController.text.trim(),
-                  'batch_id': selectedBatchId,
+                  'batch_id': selectedBatchId?.toString(),
+                  'department_id': departmentId?.toString(),
                 }).eq('id', student['id']);
                 Navigator.pop(context);
                 await _loadStudents();
@@ -2845,62 +3383,44 @@ class _ImportDataScreenState extends State<ImportDataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Import Data'),
-        backgroundColor: const Color(0xFF0D1B2A),
-        foregroundColor: Colors.white,
+        title: const Text('Students'),
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
       ),
       backgroundColor: const Color(0xFFE0E1DD),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Excel Upload Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                child: ExcelUploadContent(
-                  isUploading: _isUploading,
-                  selectedFile: _selectedFile,
-                  excelRows: _excelRows,
-                  uploadSummary: _uploadSummary,
-                  onPickAndDisplayExcel: _pickAndDisplayExcel,
-                  onDeleteFile: () {
-                    setState(() {
-                      _selectedFile = null;
-                      _excelRows = [];
-                      _uploadSummary = '';
-                    });
-                  },
-                ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Card(
+              elevation: 2,
+              child: AddStudentContent(
+                formKey: _formKey,
+                nameController: _nameController,
+                idController: _idController,
+                passwordController: _passwordController,
+                selectedBatchId: _selectedBatchId,
+                batches: _batches,
+                isLoading: _isLoading,
+                message: _message,
+                students: _students,
+                onBatchChanged: (v) => setState(() => _selectedBatchId = v),
+                onAddStudent: _addStudent,
+                onExportStudents: _exportStudents,
+                onFixDepartmentIds: _fixStudentDepartmentIds,
+                onEditStudent: _showEditStudentDialog,
+                onDeleteStudent: _deleteStudent,
+                lastExportedFilePath: _lastExportedFilePath,
+                onOpenExportedFile: () async {
+                  if (_lastExportedFilePath != null) {
+                    await OpenFile.open(_lastExportedFilePath!);
+                  }
+                },
               ),
             ),
-            // Add Student Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                child: AddStudentContent(
-                  formKey: _formKey,
-                  nameController: _nameController,
-                  idController: _idController,
-                  passwordController: _passwordController,
-                  selectedBatchId: _selectedBatchId,
-                  batches: _batches,
-                  isLoading: _isLoading,
-                  message: _message,
-                  students: _students,
-                  onBatchChanged: (v) => setState(() => _selectedBatchId = v),
-                  onAddStudent: _addStudent,
-                  onExportStudents: _exportStudents,
-                  onEditStudent: _showEditStudentDialog,
-                  onDeleteStudent: _deleteStudent,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
-} 
+}
