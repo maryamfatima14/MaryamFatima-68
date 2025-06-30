@@ -27,6 +27,7 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
 - Batch-wise complaint filtering for advisors and HODs
 - Excel upload feature for bulk student and batch data management
 - Real-time notifications on status and handler changes
+- CR/GR portal with complaint management
 
 ---
 
