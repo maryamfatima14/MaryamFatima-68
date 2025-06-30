@@ -131,6 +131,9 @@ This project uses **Supabase** to handle real-time, secure, and scalable backend
   <img src="https://github.com/user-attachments/assets/03f15364-71b2-4fbf-a73c-8d50b19eac8e" width="200"/>
   <img src="https://github.com/user-attachments/assets/1324b9d5-07b0-492f-adcf-ac4ab685d9f6" width="200"/>
   <img src="https://github.com/user-attachments/assets/736b057f-7f30-4907-b60f-a11dd72de8e1" width="200"/>
+</p>
+
+<p align="center">
   <img src="https://github.com/user-attachments/assets/bb6bcc3a-d1b3-45e8-a5b8-42f0e669ac4b" width="200"/>
   <img src="https://github.com/user-attachments/assets/0f838a05-5867-482d-8cad-a6aeb3669664" width="200"/>
 </p>
