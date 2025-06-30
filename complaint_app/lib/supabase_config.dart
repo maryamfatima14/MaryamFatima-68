@@ -2,8 +2,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SupabaseConfig {
-  static const String supabaseUrl = 'https://kraxeuhhuebgbdfqggmm.supabase.co';
-  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyYXhldWhodWViZ2JkZnFnZ21tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MjI3ODgsImV4cCI6MjA2NjA5ODc4OH0.NKU_A_PLKe-GnPbk5BzVxjHJjofpQCtGe52bzdH13gU';
+  static const String supabaseUrl = 'https://lgggruciywrlbspvztyw.supabase.co';
+  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnZ2dydWNpeXdybGJzcHZ6dHl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNDI4NTEsImV4cCI6MjA2NjcxODg1MX0.g9B-57WDyRJm_5OukdMgTb24mySwX9OyEQmMdJK3bOs';
 
   static Future<void> initialize() async {
     await Supabase.initialize(
@@ -139,7 +139,7 @@ class ComplaintService {
       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
       final fileBytes = await image.readAsBytes();
 
-      await _client.storage.from('complaint_images').uploadBinary(
+      await _client.storage.from('complaint-images').uploadBinary(
             fileName,
             fileBytes,
             fileOptions: FileOptions(
@@ -148,7 +148,7 @@ class ComplaintService {
           );
       
       final imageUrl = _client.storage
-          .from('complaint_images')
+          .from('complaint-images')
           .getPublicUrl(fileName);
 
       return imageUrl;
@@ -311,10 +311,10 @@ class ComplaintService {
     }
   }
 
-  /// Fetches complaints sent to HOD by a specific role (Student or Teacher).
+  /// Fetches complaints sent to HOD by a specific role (Student or BatchAdvisor).
   static Future<List<Map<String, dynamic>>> getComplaintsForHOD(String hodId, String senderRole) async {
     try {
-      // First get all complaints sent to this HOD
+      // Get all complaints sent to this HOD with sender information
       final allComplaints = await _client
           .from('complaints')
           .select('*, sender:student_tracking_id(username, role), complaint_comments(*)')
@@ -322,11 +322,21 @@ class ComplaintService {
           .eq('is_anonymous', false)
           .order('created_at', ascending: false);
       
-      // Filter by sender role
+      // Filter complaints based on sender role
       final filteredComplaints = allComplaints.where((complaint) {
         final sender = complaint['sender'];
-        return sender != null && sender['role'] == senderRole;
+        if (sender == null) return false;
+        
+        final role = sender['role']?.toString().toLowerCase();
+        if (senderRole == 'student') {
+          return role == 'student' || role == 'cr' || role == 'gr';
+        } else if (senderRole == 'batch_advisor') {
+          return role == 'batchadvisor' || role == 'batch_advisor';
+        }
+        return false;
       }).toList();
+      
+      print('HOD $hodId: Found ${allComplaints.length} total complaints, ${filteredComplaints.length} for role $senderRole');
       
       return List<Map<String, dynamic>>.from(filteredComplaints);
     } catch (e) {
