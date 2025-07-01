@@ -4,7 +4,7 @@ The **Smart Complaint Management System** is a role-based web and mobile applica
 
 This system improves transparency and accountability in complaint resolution by providing real-time tracking, structured escalation flow, and activity timelines.
 
----
+--
 
 ## 🔐 Supabase Integration
 
