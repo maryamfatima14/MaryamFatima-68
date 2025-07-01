@@ -4,15 +4,45 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
+    full_name VARCHAR(255),
+    email VARCHAR(255),
+    department_id UUID REFERENCES departments(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Add department_id column if it doesn't exist (for existing databases)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'department_id') THEN
+        ALTER TABLE users ADD COLUMN department_id UUID REFERENCES departments(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
+-- Add full_name column if it doesn't exist (for existing databases)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'full_name') THEN
+        ALTER TABLE users ADD COLUMN full_name VARCHAR(255);
+    END IF;
+END $$;
+
+-- Add email column if it doesn't exist (for existing databases)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'email') THEN
+        ALTER TABLE users ADD COLUMN email VARCHAR(255);
+    END IF;
+END $$;
+
+-- Create index for department_id
+CREATE INDEX IF NOT EXISTS idx_users_department_id ON users(department_id);
 
 -- Drop existing role constraint if it exists
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
 
 -- Add the new role constraint
-ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('Admin', 'HOD', 'BatchAdvisor', 'Student'));
+ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('Admin', 'HOD', 'BatchAdvisor', 'Student', 'CR', 'GR'));
 
 -- Create index for faster queries
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
@@ -144,4 +174,31 @@ BEGIN
         SET comment_text = comment 
         WHERE comment_text IS NULL AND comment IS NOT NULL;
     END IF;
-END $$; 
+END $$;
+
+-- Create CR_GR_assignments table to track CR/GR assignments
+CREATE TABLE IF NOT EXISTS cr_gr_assignments (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    department_id UUID REFERENCES departments(id) ON DELETE CASCADE,
+    batch_id UUID REFERENCES batches(id) ON DELETE CASCADE,
+    assignment_type VARCHAR(10) NOT NULL CHECK (assignment_type IN ('CR', 'GR')),
+    assigned_by UUID REFERENCES users(id) ON DELETE SET NULL, -- Batch Advisor who assigned
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index for faster queries
+CREATE INDEX IF NOT EXISTS idx_cr_gr_user_id ON cr_gr_assignments(user_id);
+CREATE INDEX IF NOT EXISTS idx_cr_gr_department_id ON cr_gr_assignments(department_id);
+CREATE INDEX IF NOT EXISTS idx_cr_gr_batch_id ON cr_gr_assignments(batch_id);
+CREATE INDEX IF NOT EXISTS idx_cr_gr_type ON cr_gr_assignments(assignment_type);
+
+-- Enable Row Level Security (RLS) for cr_gr_assignments
+ALTER TABLE cr_gr_assignments ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow all operations for now
+CREATE POLICY "Allow public access to cr_gr_assignments"
+ON cr_gr_assignments FOR ALL
+TO public
+USING (true)
+WITH CHECK (true); 
