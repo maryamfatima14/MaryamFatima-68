@@ -8,6 +8,7 @@ import 'hod_portal.dart';
 import 'splash_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter/services.dart';
+import 'cr_gr_portal.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
       title: 'University Complaint App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0D1B2A)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF52357B)),
+        scaffoldBackgroundColor: Color(0xFFEAEFEF),
         useMaterial3: true,
       ),
       home: const SplashScreen(),
@@ -44,6 +46,7 @@ class WelcomePage extends StatelessWidget {
       statusBarBrightness: Brightness.light,
     ));
     return Scaffold(
+      backgroundColor: Color(0xFFEAEFEF), // light color
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -51,8 +54,7 @@ class WelcomePage extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: SafeArea(
-          child: Column(
+        child: Column(
             children: [
               // Top spacing
               const SizedBox(height: 60),
@@ -99,28 +101,21 @@ class WelcomePage extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF0D1B2A), // 0D1B2A color
+                    backgroundColor: Color(0xFF52357B), // dark color
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 8,
-                    shadowColor: Color(0xFF0D1B2A).withOpacity(0.4),
+                    shadowColor: Color(0xFF52357B).withOpacity(0.4),
                   ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward, size: 20),
-                    ],
+                  child: const Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -129,8 +124,7 @@ class WelcomePage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -147,7 +141,7 @@ class _SignInPageState extends State<SignInPage> {
   final _passwordController = TextEditingController();
   String _selectedRole = 'Student';
   
-  final List<String> _roles = ['Admin', 'HOD', 'BatchAdvisor', 'Student'];
+  final List<String> _roles = ['Admin', 'HOD', 'BatchAdvisor', 'Student', 'CR', 'GR'];
 
   @override
   void dispose() {
@@ -202,13 +196,16 @@ class _SignInPageState extends State<SignInPage> {
                 context,
                 MaterialPageRoute(builder: (context) => HODPortal(hod: user)),
               );
+            } else if (user.role == 'CR' || user.role == 'GR') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => CRGRPortal(user: user)),
+              );
             } else {
-              // TODO: Navigate to HOD dashboard
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('HOD portal is under construction.'),
-                  backgroundColor: Colors.orangeAccent,
-                ),
+              // Admin role
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const AdminDashboard()),
               );
             }
 
@@ -235,15 +232,14 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Color(0xFFEAEFEF), // light color
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          color: Color(0xFFE0E1DD), // or use your gradient here
+          color: Color(0xFFEAEFEF), // light color
         ),
-        child: SafeArea(
-          child: SingleChildScrollView(
+        child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
@@ -256,7 +252,7 @@ class _SignInPageState extends State<SignInPage> {
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(
                         Icons.arrow_back,
-                        color: Color(0xFF0D1B2A),
+                        color: Color(0xFF52357B), // dark color for border
                         size: 28,
                       ),
                     ),
@@ -266,7 +262,7 @@ class _SignInPageState extends State<SignInPage> {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D1B2A),
+                        color: Color(0xFF52357B), // dark color for text
                       ),
                     ),
                   ],
@@ -282,7 +278,7 @@ class _SignInPageState extends State<SignInPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFF0D1B2A).withOpacity(0.2),
+                        color: Color(0xFF52357B).withOpacity(0.2),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -299,7 +295,7 @@ class _SignInPageState extends State<SignInPage> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF0D1B2A),
+                            color: Color(0xFF52357B), // dark color for text
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -324,7 +320,7 @@ class _SignInPageState extends State<SignInPage> {
                             color: Color(0xFFFFF0F5), // keep as a light background
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Color(0xFF0D1B2A),
+                              color: Color(0xFF52357B), // dark color for border
                               width: 1,
                             ),
                           ),
@@ -334,7 +330,7 @@ class _SignInPageState extends State<SignInPage> {
                               isExpanded: true,
                               icon: const Icon(
                                 Icons.keyboard_arrow_down,
-                                color: Color(0xFF0D1B2A),
+                                color: Color(0xFF52357B), // dark color for icon
                               ),
                               style: const TextStyle(
                                 fontSize: 16,
@@ -364,7 +360,7 @@ class _SignInPageState extends State<SignInPage> {
                             color: Color(0xFFFFF0F5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Color(0xFF0D1B2A),
+                              color: Color(0xFF52357B), // dark color for border
                               width: 1,
                             ),
                           ),
@@ -374,12 +370,13 @@ class _SignInPageState extends State<SignInPage> {
                             decoration: const InputDecoration(
                               labelText: 'Username',
                               labelStyle: TextStyle(
-                                color: Color(0xFF0D1B2A),
+                                color: Color(0xFF52357B), // dark color for text
+                                
                                 fontWeight: FontWeight.w500,
                               ),
                               prefixIcon: Icon(
                                 Icons.person,
-                                color: Color(0xFF0D1B2A),
+                                color: Color(0xFF52357B), // dark color for icon
                               ),
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -408,7 +405,7 @@ class _SignInPageState extends State<SignInPage> {
                             color: Color(0xFFFFF0F5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Color(0xFF0D1B2A),
+                              color: Color(0xFF52357B), // dark color for border
                               width: 1,
                             ),
                           ),
@@ -419,12 +416,12 @@ class _SignInPageState extends State<SignInPage> {
                             decoration: const InputDecoration(
                               labelText: 'Password',
                               labelStyle: TextStyle(
-                                color: Color(0xFF0D1B2A),
+                                color: Color(0xFF52357B), // dark color for text
                                 fontWeight: FontWeight.w500,
                               ),
                               prefixIcon: Icon(
                                 Icons.lock,
-                                color: Color(0xFF0D1B2A),
+                                color: Color(0xFF52357B), // dark color for icon
                               ),
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -451,14 +448,14 @@ class _SignInPageState extends State<SignInPage> {
                         ElevatedButton(
                           onPressed: _handleSignIn,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF0D1B2A),
+                            backgroundColor: Color(0xFF52357B), // dark color for button
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             elevation: 4,
-                            shadowColor: Color(0xFF0D1B2A).withOpacity(0.4),
+                            shadowColor: Color(0xFF52357B).withOpacity(0.4),
                           ),
                           child: const Text(
                             'Sign In',
@@ -478,7 +475,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
+
   }
 }
