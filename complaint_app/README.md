@@ -1,4 +1,4 @@
-## 📌 Project Scope
+![04](https://github.com/user-attachments/assets/279e2d00-538b-41fe-925b-869fd8ce4b8c)![31](https://github.com/user-attachments/assets/749f57b7-adf5-49ad-af7b-5cfdcbeb21e1)![30](https://github.com/user-attachments/assets/535ec32b-e044-4b76-87a5-6da1841abb01)![13](https://github.com/user-attachments/assets/1b672d0d-dc13-4429-b3e9-e572a928d942)![11](https://github.com/user-attachments/assets/8d34b06b-d96d-418f-88e3-8675339f569c)## 📌 Project Scope
 
 The **Smart Complaint Management System** is a role-based web and mobile application designed for the Computer Science Department to simplify the student complaint process. It facilitates students in submitting complaints, allows batch advisors to manage or escalate them, and enables HODs to take final decisions. Admins have control over departments, users, and batch mappings via Excel uploads.
 
@@ -144,70 +144,14 @@ This project uses **Supabase** to handle real-time, secure, and scalable backend
 - 🗃️ Easy table and role management via Supabase Studio
 - ⚙️ Integration with Flutter frontend for seamless user experience
 
-
-
-## 📊 Admin Dashboard
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/faad65ce-9587-44cd-9dd0-92554a430256" width="200"/>
-  <img src="https://github.com/user-attachments/assets/1fc120c4-35a2-41fa-8092-f1ea54cb1c5f" width="200"/>
-  <img src="https://github.com/user-attachments/assets/6ad47e77-2ed7-44ec-b38e-09cf82fe8695" width="200"/>
-  <img src="https://github.com/user-attachments/assets/c82ed85e-fd7d-4b3d-8b12-81b113240f66" width="200"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/9f608adf-6fb6-4ea8-bf26-656336b58cc2" width="200"/>
-  <img src="https://github.com/user-attachments/assets/d7158b63-d949-4699-9ae6-d91cd96e15b8" width="200"/>
-  <img src="https://github.com/user-attachments/assets/cf52bf49-36ad-49f5-bb24-0f3bdbea91fa" width="200"/>
-  <img src="https://github.com/user-attachments/assets/58a98e62-ecda-48ae-85db-d6cf09213ce6" width="200"/>
-</p>
-
-## 🧑‍🏫 HOD Dashboard
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/fcf7607b-164d-4bbc-b152-7a6bb521a0a3" width="200"/>
-  <img src="https://github.com/user-attachments/assets/28adf2f5-4a58-44ab-9107-26b2525bdf1f" width="200"/>
-  <img src="https://github.com/user-attachments/assets/190c7530-ce2b-4d0c-94f9-24de73d35856" width="200"/>
-  <img src="https://github.com/user-attachments/assets/e563fe92-e87a-4708-9f35-fdc49cdef40f" width="200"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/bc0b25cb-d6c7-49d6-b53c-44f9aa71147c" width="200"/>
-  <img src="https://github.com/user-attachments/assets/9cff074a-573d-40c3-94e8-cf0e7a517dcb" width="200"/>
-  <img src="https://github.com/user-attachments/assets/dd1d56e5-5ee0-4a4c-8ac2-b635e6c2d05e" width="200"/>
-  <img src="https://github.com/user-attachments/assets/b68abc8d-fb1b-4cb7-b642-c25d4f912b5e" width="200"/>
-</p>
-
-## 👨‍🏫 Batch Advisor Dashboard
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/5c0384cb-c1a0-456a-9f78-2acc0c9a2b8c" width="200"/>
-  <img src="https://github.com/user-attachments/assets/d56b0ed4-9121-4390-aa30-386fe8d62cf2" width="200"/>
-  <img src="https://github.com/user-attachments/assets/e459ab7e-a854-4eac-8c1e-c51620eb963d" width="200"/>
-  <img src="https://github.com/user-attachments/assets/ec689a8e-4733-46be-9ed4-3c0ec80e68de" width="200"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c2433ae8-3326-4809-a58a-48ee65c42d95" width="200"/>
-  <img src="https://github.com/user-attachments/assets/8972bc85-127f-4455-b786-9bd268b3c28d" width="200"/>
-  <img src="https://github.com/user-attachments/assets/566c32fe-bcc4-43ad-97ca-ed0bc336a047" width="200"/>
-  <img src="https://github.com/user-attachments/assets/524e536d-4eab-432d-b511-b82adc3029d4" width="200"/>
-</p>
-
-## 👩‍🎓 Student Dashboard
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/7373cb17-9b01-427d-9bac-8e6f3947fde7" width="200"/>
-  <img src="https://github.com/user-attachments/assets/ddca7253-12ad-4f36-9320-b517244c2575" width="200"/>
-  <img src="https://github.com/user-attachments/assets/af035bbf-75a0-49fc-baff-486134fa5a2a" width="200"/>
-  <img src="https://github.com/user-attachments/assets/89fdefbc-ef2c-47ec-8d22-c80c95c6a33d" width="200"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/46af603b-0898-4889-8c78-14890b509786" width="200"/>
-  <img src="https://github.com/user-attachments/assets/e9a18044-40c8-4711-a30e-040cb0c51fa6" width="200"/>
-  <img src="https://github.com/user-attachments/assets/9091d285-a79c-4597-9b4b-06a08e7f0fea" width="200"/>
-  <img src="https://github.com/user-attachments/assets/ab5c8331-0d82-48a6-97c9-1c65475e66fb" width="200"/>
-</p>
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c7af9144-f023-4c52-93dd-3d2e5cf9375c" width="200"/>
-</p>
+🛠️ Admin Dashboard
+<p align="center"> <img src="https://github.com/user-attachments/assets/228a267f-c7b8-41ab-befd-7f84dcc9e079" width="200"/> <img src="https://github.com/user-attachments/assets/3996cbe4-bec5-42da-b4a9-7160546df6cd" width="200"/> <img src="https://github.com/user-attachments/assets/d8ece1b6-8087-4373-9a93-1319388900b8" width="200"/> <img src="https://github.com/user-attachments/assets/7bec4b23-05b0-4ade-9d36-7f2909891512" width="200"/> </p> <p align="center"> <img src="https://github.com/user-attachments/assets/a198b7c4-54ec-49e3-9ec2-e3fc947e0f20" width="200"/> <img src="https://github.com/user-attachments/assets/47311992-b938-4c6c-8be8-9188a31d291a" width="200"/> <img src="https://github.com/user-attachments/assets/79632c1f-35d9-4277-9d43-250e7b2f749d" width="200"/> <img src="https://github.com/user-attachments/assets/3cf71a0d-ba34-4736-91e5-c2b0573b5b3d" width="200"/> </p>
+🧑‍🏫 HOD Dashboard
+<p align="center"> <img src="https://github.com/user-attachments/assets/ea25324d-c7ef-4146-aa78-d7b7d8c3a87d" width="200"/> <img src="https://github.com/user-attachments/assets/693d394f-9c2e-48e0-82ce-4d3ff45b7637" width="200"/> <img src="https://github.com/user-attachments/assets/a95c1fc6-560a-4d64-858c-73392a360aef" width="200"/> <img src="https://github.com/user-attachments/assets/8c01531b-21c1-4836-b637-141fcb5ccee9" width="200"/> </p> <p align="center"> <img src="https://github.com/user-attachments/assets/e0802320-cd57-49cb-a00f-d1fb9f61a8b7" width="200"/> <img src="https://github.com/user-attachments/assets/275b1d87-37be-42d2-8ac5-76be0edfd7dc" width="200"/> <img src="https://github.com/user-attachments/assets/356740e1-01a3-4e2f-87b8-89559dd74c75" width="200"/> <img src="https://github.com/user-attachments/assets/b3f73a45-8a63-4475-8845-463113ad39bb" width="200"/> </p>
+👨‍🏫 CR / GR Dashboard
+<p align="center"> <img src="https://github.com/user-attachments/assets/49e50f1f-e5a5-408e-9e82-cb5cf153867e" width="200"/> <img src="https://github.com/user-attachments/assets/87f33c3e-1a87-4530-94e7-929a0024e969" width="200"/> <img src="https://github.com/user-attachments/assets/e9f74408-9319-451d-8b83-028793893c9e" width="200"/> <img src="https://github.com/user-attachments/assets/7e69c5d8-62e8-451a-9d39-ed81504d0b23" width="200"/> </p> <p align="center"> <img src="https://github.com/user-attachments/assets/f8b75ebe-299f-4192-9ce8-843017c2c112" width="200"/> <img src="https://github.com/user-attachments/assets/57ad29ff-44a9-48c1-86de-684c1047fb64" width="200"/> <img src="https://github.com/user-attachments/assets/eae99576-1213-47a4-935b-23fa3dc4cad7" width="200"/> <img src="https://github.com/user-attachments/assets/2737e89a-534e-47f8-a83e-73de10ef6b39" width="200"/> </p>
+👩‍🎓 Student Dashboard
+<p align="center"> <img src="https://github.com/user-attachments/assets/3f38b6be-52f0-48b9-a858-3c3af0e29c1b" width="200"/> <img src="https://github.com/user-attachments/assets/130fd954-c30e-4acf-8f7a-e2fb108116c6" width="200"/> <img src="https://github.com/user-attachments/assets/feea8fb3-2a9f-43d9-aa92-adb9d76f2d7d" width="200"/> <img src="https://github.com/user-attachments/assets/e404a50b-7a1e-4b68-92b7-d95f17c5094d" width="200"/> </p> <p align="center"> <img src="https://github.com/user-attachments/assets/5d1484a5-7f69-434e-9d47-07427e566354" width="200"/> <img src="https://github.com/user-attachments/assets/1764121e-74e2-4623-87f6-af4bd5481b2f" width="200"/> <img src="https://github.com/user-attachments/assets/3c75eaef-14e2-4756-b773-7948d7d26894" width="200"/> <img src="https://github.com/user-attachments/assets/3c46d9a0-ceec-4389-9098-52d347094d29" width="200"/> </p> <p align="center"> <img src="https://github.com/user-attachments/assets/bd3ed08f-dfe6-4e07-8d77-06562d5b66a8" width="200"/> </p>
 
 Demo Vedio:
 
