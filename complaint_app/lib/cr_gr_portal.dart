@@ -13,128 +13,125 @@ class CRGRPortal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFE0E1DD),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF52357B),
+        foregroundColor: const Color(0xFFEAEFEF),
+        elevation: 0,
+        title: Text('${user.role} Portal'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Color(0xFFEAEFEF), size: 24),
+            tooltip: 'Logout',
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Welcome Header
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-              decoration: const BoxDecoration(
-                color: Color(0xFF52357B),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x2252357B),
-                    blurRadius: 16,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.person, color: Color(0xFFEAEFEF), size: 40),
+                      const Icon(Icons.person, color: Color(0xFF52357B), size: 40),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.role + ' Portal',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFEAEFEF),
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            Text(
                               'Welcome, ${user.username}!',
                               style: const TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFFEAEFEF),
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF52357B),
+                                letterSpacing: 1.2,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.logout, color: Color(0xFFEAEFEF), size: 28),
-                        tooltip: 'Logout',
-                        onPressed: () {
-                          Navigator.of(context).popUntil((route) => route.isFirst);
-                        },
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            // Features Grid
+            const SizedBox(height: 16),
+            // Features Cards
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.1,
-                  children: [
-                    _buildFeatureCard(
-                      context,
-                      'Submit Complaint',
-                      Icons.report_problem,
-                      Colors.red,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CRRaiseComplaintPage(user: user),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildDashboardOption(
+                        context: context,
+                        icon: Icons.report_problem,
+                        title: 'Submit Complaint',
+                        subtitle: 'Submit a new complaint to Batch Advisor or HOD',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CRRaiseComplaintPage(user: user),
+                          ),
                         ),
                       ),
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      'My Complaints',
-                      Icons.list_alt,
-                      Colors.blue,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CRViewComplaintsPage(user: user),
+                      
+                      const SizedBox(height: 20),
+
+                      _buildDashboardOption(
+                        context: context,
+                        icon: Icons.list_alt,
+                        title: 'My Complaints',
+                        subtitle: 'Check the status of your complaints',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CRViewComplaintsPage(user: user),
+                          ),
                         ),
                       ),
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      'Department Info',
-                      Icons.business,
-                      Colors.green,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CRDepartmentInfoPage(user: user),
+                      
+                      const SizedBox(height: 20),
+
+                      _buildDashboardOption(
+                        context: context,
+                        icon: Icons.business,
+                        title: 'Department Info',
+                        subtitle: 'View department information and details',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CRDepartmentInfoPage(user: user),
+                          ),
                         ),
                       ),
-                    ),
-                    _buildFeatureCard(
-                      context,
-                      'Batch Info',
-                      Icons.school,
-                      Colors.orange,
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CRBatchInfoPage(user: user),
+                      
+                      const SizedBox(height: 20),
+
+                      _buildDashboardOption(
+                        context: context,
+                        icon: Icons.school,
+                        title: 'Batch Info',
+                        subtitle: 'View batch information and details',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => CRBatchInfoPage(user: user),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      
+                      // Add bottom padding to ensure last item is fully visible
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -144,49 +141,65 @@ class CRGRPortal extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF52357B).withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-          border: Border.all(color: const Color(0xFF52357B).withOpacity(0.15), width: 1.2),
+  Widget _buildDashboardOption({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.95),
+          foregroundColor: const Color(0xFF52357B),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 8,
+          shadowColor: const Color(0xFF52357B).withOpacity(0.3),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: color.withOpacity(0.10),
-              radius: 32,
-              child: Icon(icon, color: color, size: 36),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Color(0xFF52357B),
-                ),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAEFEF),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                color: const Color(0xFF52357B),
+                size: 24,
               ),
             ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
       ),
@@ -506,34 +519,135 @@ class _CRViewComplaintsPageState extends State<CRViewComplaintsPage> {
 
                       return Card(
                         margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          title: Text(
-                            complaint['complaint_text'] ?? 'No text',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (complaint['recipient'] != null)
-                                Text('To: ${complaint['recipient']['username']} (${complaint['recipient']['role']})'),
-                              Text('Date: ${createdAt.toString().substring(0, 10)}'),
-                              if (complaint['is_anonymous'] == true)
-                                const Text('Anonymous', style: TextStyle(fontStyle: FontStyle.italic)),
-                            ],
-                          ),
-                          trailing: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: statusColor),
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                complaint['complaint_text'] ?? 'No text',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (complaint['recipient'] != null)
+                                    Text('To: ${complaint['recipient']['username']} (${complaint['recipient']['role']})'),
+                                  Text('Date: ${createdAt.toString().substring(0, 10)}'),
+                                  if (complaint['is_anonymous'] == true)
+                                    const Text('Anonymous', style: TextStyle(fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                              trailing: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: statusColor),
+                                ),
+                                child: Text(
+                                  status,
+                                  style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              status,
-                              style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                            // Forward button for CR/GR, only if pending and recipient is HOD or Batch Advisor
+                            if (status == 'Pending' && complaint['recipient'] != null &&
+                                (complaint['recipient']['role'] == 'HOD' || complaint['recipient']['role'] == 'BatchAdvisor'))
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton.icon(
+                                    icon: const Icon(Icons.forward_to_inbox, size: 18),
+                                    label: const Text('Forward'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF52357B),
+                                      foregroundColor: Color(0xFFEAEFEF),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () async {
+                                      final reasonController = TextEditingController();
+                                      final newRecipientRole = complaint['recipient']['role'] == 'HOD' ? 'BatchAdvisor' : 'HOD';
+                                      String? newRecipientId;
+                                      // Fetch the new recipient (BatchAdvisor or HOD) for this student
+                                      try {
+                                        // Find the new recipient from UserService
+                                        final users = await UserService.getUsersByRole(newRecipientRole);
+                                        if (users.isEmpty) {
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('No $newRecipientRole found to forward.'), backgroundColor: Colors.red),
+                                            );
+                                          }
+                                          return;
+                                        }
+                                        // For demo: pick the first user (could be improved to select specific one)
+                                        newRecipientId = users.first.id;
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Failed to find $newRecipientRole: $e'), backgroundColor: Colors.red),
+                                          );
+                                        }
+                                        return;
+                                      }
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Forward Complaint'),
+                                          content: TextField(
+                                            controller: reasonController,
+                                            maxLines: 3,
+                                            decoration: const InputDecoration(
+                                              hintText: 'Enter reason for forwarding...',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child: const Text('Cancel'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                final reason = reasonController.text.trim();
+                                                if (reason.isEmpty) return;
+                                                Navigator.pop(context);
+                                                try {
+                                                  await ComplaintService.forwardComplaint(
+                                                    complaintId: complaint['id'],
+                                                    newRecipientId: newRecipientId!,
+                                                  );
+                                                  await ComplaintService.addComment(
+                                                    complaintId: complaint['id'],
+                                                    studentId: widget.user.id,
+                                                    commentText: '[Forwarded] $reason',
+                                                  );
+                                                  await _loadComplaints();
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      const SnackBar(content: Text('Complaint forwarded successfully!'), backgroundColor: Colors.green),
+                                                    );
+                                                  }
+                                                } catch (e) {
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(content: Text('Failed to forward: $e'), backgroundColor: Colors.red),
+                                                    );
+                                                  }
+                                                }
+                                              },
+                                              child: const Text('Forward'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       );
                     },
