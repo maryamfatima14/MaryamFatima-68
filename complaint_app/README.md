@@ -1,4 +1,4 @@
-![04](https://github.com/user-attachments/assets/279e2d00-538b-41fe-925b-869fd8ce4b8c)![31](https://github.com/user-attachments/assets/749f57b7-adf5-49ad-af7b-5cfdcbeb21e1)![30](https://github.com/user-attachments/assets/535ec32b-e044-4b76-87a5-6da1841abb01)![13](https://github.com/user-attachments/assets/1b672d0d-dc13-4429-b3e9-e572a928d942)![11](https://github.com/user-attachments/assets/8d34b06b-d96d-418f-88e3-8675339f569c)## 📌 Project Scope
+## 📌 Project Scope
 
 The **Smart Complaint Management System** is a role-based web and mobile application designed for the Computer Science Department to simplify the student complaint process. It facilitates students in submitting complaints, allows batch advisors to manage or escalate them, and enables HODs to take final decisions. Admins have control over departments, users, and batch mappings via Excel uploads.
 
