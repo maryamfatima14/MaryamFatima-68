@@ -1,6 +1,6 @@
 ## 📌 Project Scope
 
-The **Smart Complaint Management System** is a role-based web and mobile application designed for the Computer Science Department to simplify the student complaint process. It facilitates students in submitting complaints, allows batch advisors to manage or escalate them, and enables HODs to take final decisions. Admins have control over departments, users, and batch mappings via Excel uploads.
+The **Smart Complaint Management System** is a role-based web and mobile application designed for the various Department to simplify the student complaint process. It facilitates students in submitting complaints, allows batch advisors to manage or escalate them, and enables HODs to take final decisions. Admins have control over departments, users, and batch mappings via Excel uploads.
 
 This system improves transparency and accountability in complaint resolution by providing real-time tracking, structured escalation flow, and activity timelines.
 
@@ -14,7 +14,7 @@ This project uses **Supabase** as the backend-as-a-service (BaaS) platform for:
 - **Database**: PostgreSQL with Supabase Realtime for live updates
 - **Row-Level Security (RLS)**: Ensures users can only access their own data
 - **Storage** (optional): Google Drive links are used for media, but Supabase storage can be integrated for file uploads
-- **APIs**: Auto-generated RESTful APIs for interacting with tables
+
 
 ---
 
@@ -155,4 +155,4 @@ This project uses **Supabase** to handle real-time, secure, and scalable backend
 
 Demo Vedio:
 
-https://drive.google.com/file/d/14Aqme47_HaQQLWrUoP1OltAptJGojSH5/view?usp=sharing
+https://drive.google.com/file/d/1zL7kB8qW5009pyEUd0U4D4OB9tuKJY3F/view?usp=sharing
